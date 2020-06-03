@@ -2,10 +2,10 @@ import torch
 import os
 import numpy as np
 import pandas as pd
-from PIL import Image
+import cv2
 
 
-PATH = "/home/tmr/data-matrix-dataset-loading/dataset/"
+PATH = "/home/tmr/data-matrix-dataset-loading/dataset_resized/"
 PATH_IMAGES = os.path.join(PATH, "images")
 PATH_LABELS = os.path.join(PATH, "labels")
 
@@ -27,8 +27,10 @@ class DataMatrixDataset(object):
         
     def __getitem__(self, idx):
         filename = self.labels_file["External ID"][idx]
-        img = Image.open(os.path.join(PATH_IMAGES, self.mode, filename)).convert('RGB')
-        width, height = img.size
+        #img = Image.open(os.path.join(PATH_IMAGES, self.mode, filename)).convert('RGB')
+        img = cv2.imread(os.path.join(PATH_IMAGES, self.mode, filename))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)       
+        width, height = img.shape[1], img.shape[0]
         img = np.array(img)
         lbl_file_row = self.labels_file[self.labels_file.index == idx ]
         lbl = lbl_file_row["Label"][idx]
