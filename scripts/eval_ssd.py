@@ -4,7 +4,7 @@ import numpy as np
 import time 
 
 from models.ssd.ssd import MobileNetV2SSD_Lite
-from datasets.bdd100k import BDD100kDataset
+from datasets.datamatrix import DataMatrixDataset
 from utils.evaluation import convert_to_coco_api, CocoEvaluator
 from utils.tools import get_arguments
 from models.ssd.predictor import Predictor
@@ -48,12 +48,12 @@ device = torch.device("cpu")
 
 if args.model == 'ssd512':
     from utils.ssd import ssd512_config as config
-    net = MobileNetV2SSD_Lite(11, model = "ssd512",is_test = True, device = device)
+    net = MobileNetV2SSD_Lite(2, model = "ssd512",is_test = True, device = device)
 else:
     sys.exit("You did not pick the right script! Exiting...")
 
-if (args.dataset == 'bdd100k'):
-  val_ds = BDD100kDataset(mode = 'val')
+if (args.dataset == 'datamatrix'):
+  val_ds = DataMatrixDataset(mode = 'val')
   
   
 # Loading weights to the network
