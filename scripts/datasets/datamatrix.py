@@ -51,6 +51,7 @@ class DataMatrixDataset(object):
                 if (coordinates['geometry'][i]['y']<ymin):
                     ymin = coordinates['geometry'][i]['y']
             boxes.append([xmin, ymin,xmax,ymax])
+            obj_labels.append(1)
         boxes_ssd = np.array(boxes, dtype = np.float32)
         labels_ssd = np.array(obj_labels, dtype = np.int64)
         boxes = torch.as_tensor(boxes, dtype = torch.float32)
@@ -74,7 +75,7 @@ class DataMatrixDataset(object):
             target['boxes'] = torch.as_tensor(augmented['bboxes'],  dtype = torch.float32)
             target['labels'] = torch.as_tensor(augmented['labels'], dtype = torch.int64)
             
-        elif (self.transforms is not None and self.target_transform is not None): #SSD 
+        elif (self.transforms is not None and self.target_transform is not None): #SSD
             img, boxes, labels = self.transforms(img, boxes_ssd, labels_ssd)
             target['boxes'] = boxes
             target['labels'] = labels

@@ -16,7 +16,7 @@ from ignite.contrib.handlers import ProgressBar
 
 
 #My modules
-from datasets.bdd100k import BDD100kDataset
+from datasets.datamatrix import DataMatrixDataset
 from models.ssd.ssd import MobileNetV2SSD_Lite
 from utils.prepare_data import get_tfms_ssd300, get_tfms_ssd512
 from utils.tools import get_arguments, get_scheduler
@@ -38,16 +38,14 @@ device = torch.device('cuda')
 
 if (args.model == 'ssd300'):
     from utils.ssd import ssd300_config as config
-    #train_tfms = get_tfms_ssd300() 
 
 elif  (args.model == 'ssd512'):
     from utils.ssd import ssd512_config as config
-    #train_tfms = get_tfms_ssd512()
     
 else:
     sys.exit("You did not pick the right script! Exiting...")
 
-model = MobileNetV2SSD_Lite(11, device, model = args.model)
+model = MobileNetV2SSD_Lite(2, device, model = args.model)
 target_transform = MatchPrior(config.priors,
                               config.center_variance,
                               config.size_variance,
@@ -84,9 +82,8 @@ else:
 
 model.to(device)
 
-if (args.dataset == 'bdd100k'):
-  train_ds = BDD100kDataset(transforms = train_tfms, target_transform = target_transform)
-  # val_ds = BDD100kDataset(transforms = val_tfms,mode = 'val')
+if (args.dataset == 'datamatrix'):
+  train_ds = DataMatrixDataset(transforms = train_tfms, target_transform = target_transform)
 
 if args.distributed:
     kwargs = dict(num_replicas=world_size, rank=local_rank)
@@ -162,7 +159,7 @@ for name in ['loss', 'loss_classifier', 'loss_regression']:
     RunningAverage(output_transform=lambda x: x[name]) \
         .attach(trainer, name)
     
-# # TODO
+# TODO
 # keep 5 best scores in val set
 @trainer.on(Events.ITERATION_COMPLETED)
 def log_optimizer_params(engine):
