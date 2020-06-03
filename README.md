@@ -1,5 +1,5 @@
 # data-matrix-detection-benchmark
-Benchmark for the detection of data matrix landmarks.
+Benchmark for the detection of data matrix landmarks using Deep Learning architectures.
 
 
 # Table of Contents
@@ -9,7 +9,7 @@ Benchmark for the detection of data matrix landmarks.
 - [Object Detection](#object-detection)
   * [Faster RCNN](#faster-rcnn)
   * [SSD512](#ssd512)
-  * [YoloV3](#yolov3)
+  * [YOLOV3](#yolov3)
 
 
 # Overview
