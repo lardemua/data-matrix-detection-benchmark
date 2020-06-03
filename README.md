@@ -1,8 +1,29 @@
 # data-matrix-detection-benchmark
 Benchmark for the detection of data matrix landmarks.
-Evaluation: Nvidia RTX2080ti 
 
-First result Faster-RCNN
+
+# Table of Contents
+- [Overview](#overview)
+- [Table of Contents](#table-of-contents)
+- [Hardware](#hardware) 
+- [Object Detection](#object-detection)
+  * [Faster RCNN](#faster-rcnn)
+  * [SSD512](#ssd512)
+  * [YoloV3](#yolov3)
+
+
+# Overview
+This repo is an aggregation of Faster RCNN, SSD512 and YoloV3(608) for Data Matrix detection. The performance comparison between all models is performed at the end.
+
+# Hardware
+
+Training and Evaluation: Nvidia RTX2080ti
+
+# Object Detection
+
+## Faster RCNN
+
+Evaluation:  
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
@@ -19,9 +40,11 @@ First result Faster-RCNN
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.270    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.527    |
 
-30 fps
+frame rate: 30 fps
 
-SSD512 result
+## SSD512
+
+Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
@@ -38,4 +61,6 @@ SSD512 result
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.000    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.262    |
 
-100fps
+framerate: 100fps
+
+## YOLOV3 (608) 
