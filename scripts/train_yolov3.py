@@ -15,7 +15,7 @@ from ignite.handlers import ModelCheckpoint, global_step_from_engine
 from ignite.contrib.handlers import ProgressBar
 
 # My modules
-from datasets.bdd100k_yolo import BDD100kDataset
+from datasets.datamatrix_yolo import DataMatrixDataset
 from models.yolov3.yolov3 import yolov3_darknet
 from utils.tools import get_arguments, get_scheduler
 from utils.yolov3.yolo_utils import YOLOLoss, get_optimizer
@@ -56,10 +56,9 @@ net.to(device)
 
 
 # Dataset and Train loader
-if (args.dataset == 'bdd100k'):
-  train_ds = BDD100kDataset(img_size = (config["input_shape"]["width"], config["input_shape"]["height"]))
-  # val_ds = BDD100kDataset(transforms = val_tfms,mode = 'val')
-
+if (args.dataset == 'datamatrix'):
+  train_ds = DataMatrixDataset(img_size = (config["input_shape"]["width"], config["input_shape"]["height"]))
+  
 if args.distributed:
     kwargs = dict(num_replicas=world_size, rank=local_rank)
     train_sampler = DistributedSampler(train_ds, **kwargs)
