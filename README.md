@@ -1,7 +1,8 @@
 # data-matrix-detection-benchmark
-Benchmark for the detection of data matrix landmarks. 
+Benchmark for the detection of data matrix landmarks.
+Evaluation: Nvidia RTX2080ti 
 
-First result Faster-RCNN:
+First result Faster-RCNN
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
@@ -18,8 +19,10 @@ First result Faster-RCNN:
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.270    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.527    |
 
+30 fps
 
-SSD512 result:
+SSD512 result
+
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
   | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.147    |
@@ -34,3 +37,5 @@ SSD512 result:
   | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.000    |
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.000    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.262    |
+
+100fps
