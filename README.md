@@ -23,6 +23,10 @@ Training and Evaluation: Nvidia RTX2080ti
 
 ## Faster RCNN
 
+````
+python train_faster.py -b 4 -lr 1e-4 -eps 25
+````
+
 Evaluation:  
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
@@ -44,6 +48,10 @@ frame rate: 30 fps
 
 ## SSD512
 
+````
+python train_ssd.py -m ssd512 -b 16 -lr 1e-3 -wd 4e-5 -eps 200
+````
+
 Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
@@ -64,3 +72,8 @@ Evaluation:
 framerate: 100fps
 
 ## YOLOV3 (608) 
+
+
+````
+python train_yolov3.py -m yolov3 -b 8 -wd 4e-5 -eps 200
+````
