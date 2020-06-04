@@ -10,12 +10,10 @@ from utils.tools import get_arguments
 from models.ssd.predictor import Predictor
 
 
-
-
 def evaluate(predictor, val_ds):
     """Evaluation of the validation set 
     Keyword arguments:
-    - model: model after training with the respective weights
+    - predictor: model after training with the respective weights
     - data_loader: validaton set in the loader format
     - device: device on which the network will be evaluated
     """
@@ -23,13 +21,13 @@ def evaluate(predictor, val_ds):
     coco_evaluator = CocoEvaluator(coco)
     evaluator_times = []
     for i in range(len(val_ds)):
-        image, targets = val_ds.__getitem__(i)
+        image, targets = val_ds[i]
         boxes, labels, probs = predictor.predict(image, 10 , 0.5)
         if boxes.size()[0] == 0:
             continue
         outputs = {'boxes': boxes,
-                'labels':labels,
-                'scores': probs}
+                   'labels':labels,
+                   'scores': probs}
         res = {targets['image_id'].item(): outputs}
         evaluator_time = time.time()
         coco_evaluator.update(res)
@@ -44,7 +42,8 @@ def evaluate(predictor, val_ds):
 
 
 args = get_arguments()
-device = torch.device("cpu")
+dev = args.device if args.device is not None else "cpu"
+device = torch.device(dev)
 
 if args.model == 'ssd512':
     from utils.ssd import ssd512_config as config

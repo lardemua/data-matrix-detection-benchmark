@@ -7,7 +7,7 @@ from utils.yolov3.yolo_utils import Compose, ImageBaseAug, ResizeImage, ToTensor
 import albumentations as albu
 
 
-PATH = "/home/tmr/data-matrix-dataset-loading/dataset_resized/"
+PATH = "/home/tmr/data-matrix-dataset-loading/dataset_resized_4/"
 PATH_IMAGES = os.path.join(PATH, "images")
 PATH_LABELS = os.path.join(PATH, "labels")
 

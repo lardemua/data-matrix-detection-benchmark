@@ -114,3 +114,20 @@ To evaluate:
 ````
 python eval_yolov3.py -m yolov3 -sd <model.pth>
 ````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.007    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.034    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.002    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.000    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.001    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.015    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.026    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.035    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.035    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.000    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.003    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.066    |
