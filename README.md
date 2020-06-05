@@ -37,36 +37,36 @@ Evaluation (original dataset):
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.312    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.642    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.272    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.006    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.192    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.486    |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.307    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.624    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.260    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.001    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.188    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.485    |
   | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.179    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.364    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.365    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.078    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.361    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.362    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.023    |
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.270    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.527    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.535    |
 
 
 Evaluation (resized dataset):
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.263    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.545    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.200    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.154    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.424    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.161    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.309    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.310    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.007    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.222    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.471    |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.268    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.564    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.221    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.001    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.146    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.440    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.159    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.315    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.317    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.020    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.220    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.484    |
 
 
 frame rate: 30 fps
@@ -76,12 +76,12 @@ frame rate: 30 fps
 
 To train:
 ````
-python train_ssd.py -m ssd512 - 16 -lr 1e-3 -wd 4e-5 -eps 150
+python train_ssd.py -m ssd512 -b 16 -lr 1e-3 -wd 4e-5 -eps 150
 ````
 
 To evaluate:
 ````
-python eval_faster.py -m ssd512 -sd <model.pth>
+python eval_ssd.py -m ssd512 -sd <model.pth>
 ````
 
 Evaluation:
