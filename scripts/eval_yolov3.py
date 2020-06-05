@@ -48,7 +48,7 @@ def evaluate(net, val_ds, device):
         for ll in range(3):
             output_list.append(yolo_losses[ll](outputs[ll]))
         output = torch.cat(output_list, 1)
-        output = non_max_suppression(output, config["priors_info"]["classes"], conf_thres=0.5, nms_thres=0.5)
+        output = non_max_suppression(output, config["priors_info"]["classes"], conf_thres=0.01, nms_thres=0.45)
         ori_h, ori_w = img.shape[0], img.shape[1]
         pre_h, pre_w  = (config["input_shape"]["height"], config["input_shape"]["width"])
         if output[0] is not None:
