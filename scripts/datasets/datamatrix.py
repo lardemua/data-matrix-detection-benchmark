@@ -31,6 +31,9 @@ class DataMatrixDataset(object):
         img = cv2.imread(os.path.join(PATH_IMAGES, self.mode, filename))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)       
         width, height = img.shape[1], img.shape[0]
+        if height > width:
+            img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            width, height = img.shape[1], img.shape[0]
         img = np.array(img)
         lbl_file_row = self.labels_file[self.labels_file.index == idx ]
         lbl = lbl_file_row["Label"][idx]
