@@ -22,9 +22,12 @@ def evaluate(model,data_loader,device):
     coco = convert_to_coco_api(data_loader.dataset)
     coco_evaluator = CocoEvaluator(coco)
     evaluator_times = []
+    proc_times = []
     for image, targets in data_loader:
         image, targets = transform_inputs(image, targets, device)
+        init = time.time()
         outputs = model(image)
+        proc_times.append(time.time() - init)
 
         outputs = [{k: v.to(cpu_device) for k, v in t.items()} for t in outputs]
         res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
@@ -32,6 +35,7 @@ def evaluate(model,data_loader,device):
         coco_evaluator.update(res)
         evaluator_times.append(time.time() - evaluator_time) 
     print("Averaged stats:", np.mean(evaluator_times))
+    print("Averaged proc time:", np.mean(proc_times))
     coco_evaluator.synchronize_between_processes()
     # accumulate predictions from all images
     coco_evaluator.accumulate()

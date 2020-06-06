@@ -20,9 +20,12 @@ def evaluate(predictor, val_ds):
     coco = convert_to_coco_api(val_ds)
     coco_evaluator = CocoEvaluator(coco)
     evaluator_times = []
+    proc_times = []
     for i in range(len(val_ds)):
         image, targets = val_ds[i]
-        boxes, labels, probs = predictor.predict(image, 10 , 0.5)
+        init = time.time()
+        boxes, labels, probs = predictor.predict(image, 10 , 0.2)
+        proc_times.append(time.time() - init)
         if boxes.size()[0] == 0:
             continue
         outputs = {'boxes': boxes,
@@ -34,6 +37,7 @@ def evaluate(predictor, val_ds):
         evaluator_times.append(time.time() - evaluator_time) 
     
     print("Averaged stats:", np.mean(evaluator_times))
+    print("Averaged proc time:", np.mean(proc_times))
     coco_evaluator.synchronize_between_processes()
     # accumulate predictions from all images
     coco_evaluator.accumulate()
