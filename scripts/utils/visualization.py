@@ -36,7 +36,7 @@ class VisualizationImg:
         self.eval_frames = eval_frames
         self.threshold = thresh
 
-    def visualize_bbox(self, img, bbox, label, thickness=2):
+    def visualize_bbox(self, img, bbox, label, thickness=4):
         x_min, y_min, x_max, y_max = bbox
         class_name = LBLS_MAP[label]
         cv2.rectangle(img, (int(x_min), int(y_min)), (int(x_max), int(y_max)), COLORMAP[class_name], thickness) #top left and bottom right
