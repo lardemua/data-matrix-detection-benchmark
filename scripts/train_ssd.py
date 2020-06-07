@@ -18,7 +18,6 @@ from ignite.contrib.handlers import ProgressBar
 #My modules
 from datasets.datamatrix import DataMatrixDataset
 from models.ssd.ssd import MobileNetV2SSD_Lite
-from utils.prepare_data import get_tfms_ssd300, get_tfms_ssd512
 from utils.tools import get_arguments, get_scheduler
 from utils.ssd.ssd_utils import MultiboxLoss, MatchPrior, freeze_net_layers
 from utils.ssd.transforms_ssd import TrainAugmentation
@@ -172,7 +171,7 @@ if local_rank == 0:
     ProgressBar(persist=True) \
         .attach(trainer, ['loss', 'lr'])
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = 'checkpoints/' + args.model + '/{}'.format(dirname)
+    dirname = 'checkpoints/' + args.model + 'new_aug' + '/{}'.format(dirname)
     checkpointer = ModelCheckpoint(
         dirname=dirname,
         filename_prefix=args.model,

@@ -26,49 +26,6 @@ def get_tfms_faster():
 
   return train_tfms, val_tfms
 
-def get_tfms_ssd300():
-  """Function that returns the transformations to
-  be applied to both loaders (training, validation) when 
-  trainin g SSD300
-  Keyword arguments:
-  - cropsize: tupple
-  - scalling: list of two values     
-  """
-
-  train_tfms = albu.Compose([albu.Resize(300,300),
-                            albu.HorizontalFlip(p = 1),
-                            albu.Normalize(),
-                            ToTensor()],
-                            bbox_params = albu.BboxParams(format='pascal_voc', 
-                                                          min_area = 0., 
-                                                          min_visibility = 0., 
-                                                          label_fields=['labels']))
-
-  return train_tfms
-
-def get_tfms_ssd512():
-  """Function that returns the transformations to
-  be applied to both loaders (training, validation) when 
-  trainin g SSD512
-  Keyword arguments:
-  - cropsize: tupple
-  - scalling: list of two values     
-  """
-
-  train_tfms = albu.Compose([#albu.OneOf([
-                             albu.Resize(512,512), 
-                            #  albu.OneOf([albu.RandomSizedBBoxSafeCrop(512, 512, erosion_rate = erosion) 
-                            #  for erosion in [0.1,0.3,0.5,0.7,0.9]], 
-                            #  p = 1),], 
-                            #  p = 1), 
-                             albu.HorizontalFlip(p = 1),
-                             albu.Normalize(),
-                             ToTensor(),],
-                             bbox_params = albu.BboxParams(format='pascal_voc', 
-                                                             min_area = 0., 
-                                                             min_visibility = 0., 
-                                                             label_fields=['labels']))
-  return train_tfms
 
 
 def collate_fn(batch):
