@@ -31,6 +31,17 @@ def get_arguments():
                 "Default: faster-rcnn; "
                 "Possible choices: faster-rcnn, ssd300 and ssd512 for now")
     )
+    
+    #backbone choice
+    parser.add_argument(
+        "--feature_extractor",
+        "-feat",
+        choices = ["mobilenetv2", "mobilenetv2fpn","resnet50", "resnet50fpn"],
+        default = "mobilenetv2",
+        help = ("Feature extractor of the model; "
+                "Default: mobilenetv2; "
+                "Possible choices: mobilenetv2, mobilenetv2fpn,resnet50, resnet50fpn for now")
+    )
 
     # Hyperparameters
     parser.add_argument(
@@ -49,14 +60,14 @@ def get_arguments():
 
     )
     parser.add_argument(
-        "--learning-rate",
+        "--learning_rate",
         "-lr",
         type=float,
         default=1e-3,
         help="Learning rate value; Default: 1e-3"
     )
     parser.add_argument(
-        "--weight-decay",
+        "--weight_decay",
         "-wd",
         type = float,
         default = 1e-4,

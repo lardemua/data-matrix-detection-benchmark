@@ -8,6 +8,9 @@ Benchmark for the detection of data matrix landmarks using Deep Learning archite
 - [Hardware](#hardware) 
 - [Object Detection](#object-detection)
   * [Faster RCNN](#faster-rcnn)
+    * [Resnet50FPN](#resnet50fpn)
+    * [Resnet50](#resnet50)
+    * [MobileNetV2](#mobilenetv2)
   * [SSD512](#ssd512)
   * [YOLOV3](#yolov3)
 
@@ -23,83 +26,124 @@ Training and Evaluation: Nvidia RTX2080ti
 
 ## Faster RCNN
 
+### Resnet50FPN
+
 To train:
 ````
-python train_faster.py -b 4 -lr 1e-4 -eps 25
+python train_faster.py --batch_size 4 --learning_rate 1e-4 --epochs 50 --feature_extractor resnet50fpn
 ````
 
 To evaluate:
 ````
-python eval_faster.py -sd <model.pth>
-````
-
-Evaluation (original dataset):  
-
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.307    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.624    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.260    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.001    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.188    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.485    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.179    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.361    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.362    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.023    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.270    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.535    |
-
-
-Evaluation (resized dataset):
-
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.268    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.564    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.221    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.001    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.146    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.440    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.159    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.315    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.317    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.020    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.220    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.484    |
-
-
-frame rate: 9 fps
-
-## SSD512
-
-
-To train:
-````
-python train_ssd.py -m ssd512 -b 16 -lr 1e-3 -wd 4e-5 -eps 150
-````
-
-To evaluate:
-````
-python eval_ssd.py -m ssd512 -sd <model.pth>
+python eval_faster.py --state_dict <PATH to model.pth> --feature_extractor resnet50fpn
 ````
 
 Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.214    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.363    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.228    |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.608    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.780    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.713    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.242    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.562    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.756    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.301    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.658    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.658    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.267    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.609    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.806    |
+
+framerate: 5fps
+
+### Resnet50
+To train:
+````
+python train_faster.py --batch_size 4 --learning_rate 1e-6 --epochs 25 --feature_extractor resnet50
+````
+
+To evaluate:
+````
+python eval_faster.py --state_dict <PATH to model.pth> --feature_extractor resnet50
+````
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### MobileNetV2
+
+To train:
+````
+python train_faster.py --batch_size 4 --learning_rate 1e-4 --epochs 50
+````
+
+To evaluate:
+````
+python eval_faster.py --state_dict <PATH to model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.442    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.699    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.459    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.015    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.341    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.632    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.236    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.502    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.503    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.113    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.414    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.686    |
+
+frame rate: 10 fps
+
+## SSD512
+
+
+To train:
+````
+python train_ssd.py --model ssd512 --batch_size 16 --learning_rate 1e-3 --weight_decay 4e-5 --epochs 150
+````
+
+To evaluate:
+````
+python eval_ssd.py --model ssd512 -state_dict <PATH to model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.216    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.368    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.218    |
   | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.068    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.290    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.153    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.276    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.276    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.065    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.292    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.159    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.297    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.297    |
   | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.070    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.377    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.067    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.405    |
 
 framerate: 71fps
 
@@ -107,18 +151,18 @@ Evaluation(mosaic mode):
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.352    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.586    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.408    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.009    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.314    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.478    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.204    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.432    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.432    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.016    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.398    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.573    |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.359    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.575    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.402    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.027    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.325    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.495    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.207    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.464    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.466    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.023    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.446    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.602    |
 
 framerate:7fps
 
@@ -127,12 +171,12 @@ framerate:7fps
 
 To train:
 ````
-python train_yolov3.py -m yolov3 -b 8 -wd 4e-5 -eps 200
+python train_yolov3.py --model yolov3 --batch_size 8 --weight_decay 4e-5 --eps 200
 ````
 
 To evaluate:
 ````
-python eval_yolov3.py -m yolov3 -sd <model.pth>
+python eval_yolov3.py --model yolov3 --state_dict <model.pth>
 ````
 
 Evaluation:

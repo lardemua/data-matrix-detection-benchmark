@@ -171,7 +171,7 @@ if local_rank == 0:
     ProgressBar(persist=True) \
         .attach(trainer, ['loss', 'lr'])
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = 'checkpoints/' + args.model + 'new_aug' + '/{}'.format(dirname)
+    dirname = 'checkpoints/' + args.model +  '/{}'.format(dirname)
     checkpointer = ModelCheckpoint(
         dirname=dirname,
         filename_prefix=args.model,

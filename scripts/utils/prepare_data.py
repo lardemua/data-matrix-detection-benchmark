@@ -10,8 +10,15 @@ def get_tfms_faster():
   """
 
   train_tfms = albu.Compose([
-    albu.Resize(600,800),
-    albu.HorizontalFlip(p = 1),
+    albu.OneOf([
+            albu.augmentations.transforms.RandomSizedBBoxSafeCrop(3024,4032,p=0.25),
+            albu.augmentations.transforms.RandomSizedBBoxSafeCrop(1080,1920,p=0.25),
+            albu.augmentations.transforms.Resize(600,800, p=0.5),
+        ], p=1),
+    albu.augmentations.transforms.MultiplicativeNoise(),
+    albu.augmentations.transforms.RandomContrast(limit=0.5),
+    #albu.augmentations.transforms.Resize(600,800),
+    albu.HorizontalFlip(),
     ToTensor(),
   ],bbox_params = albu.BboxParams(format='pascal_voc', 
                                  min_area = 0., 

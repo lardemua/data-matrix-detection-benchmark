@@ -15,8 +15,7 @@ from ignite.handlers import ModelCheckpoint, global_step_from_engine
 from ignite.contrib.handlers import ProgressBar
 
 # My modules
-from datasets.datamatrix_yolo_new_aug import DataMatrixDataset
-#from datasets.datamatrix_yolo import DataMatrixDataset
+from datasets.datamatrix_yolo import DataMatrixDataset
 from models.yolov3.yolov3 import yolov3_darknet
 from utils.tools import get_arguments, get_scheduler
 from utils.yolov3.yolo_utils import YOLOLoss, get_optimizer
@@ -151,7 +150,7 @@ if local_rank == 0:
     ProgressBar(persist=True) \
         .attach(trainer, ['loss', 'lr'])
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = 'checkpoints/' + args.model + 'new' +'/{}'.format(dirname)
+    dirname = 'checkpoints/' + args.model +'/{}'.format(dirname)
     checkpointer = ModelCheckpoint(
         dirname=dirname,
         filename_prefix=args.model,

@@ -16,7 +16,7 @@ from ignite.contrib.handlers import ProgressBar
 
 #My modules
 from datasets.datamatrix import DataMatrixDataset
-from models.faster_rcnn import FasterRCNN
+from models.faster_rcnn import resnet50fpn_fasterRCNN, resnet50_fasterRCNN, mobilenetv2_fasterRCNN
 from utils.prepare_data import get_tfms_faster,collate_fn, transform_inputs
 from utils.tools import get_arguments, get_scheduler
 
@@ -69,7 +69,12 @@ train_loader = DataLoader(
 
 
 if (args.model == 'faster'):
-    model = FasterRCNN(2)
+    if (args.feature_extractor == 'mobilenetv2'):
+        model = mobilenetv2_fasterRCNN(2)
+    elif (args.feature_extractor == 'resnet50fpn'):
+        model = resnet50fpn_fasterRCNN(2)
+    elif (args.feature_extractor == 'resnet50'):
+        model = resnet50_fasterRCNN(2)
 else:
     sys.exit("You did not pick the right script! Exiting...")
 
@@ -138,7 +143,7 @@ if local_rank == 0:
     ProgressBar(persist=True) \
         .attach(trainer, ['loss', 'lr'])
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = 'checkpoints/' + args.model + '/{}'.format(dirname)
+    dirname = 'checkpoints/' + args.feature_extractor + args.model + '/{}'.format(dirname)
     checkpointer = ModelCheckpoint(
         dirname=dirname,
         filename_prefix=args.model,

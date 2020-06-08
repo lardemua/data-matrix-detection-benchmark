@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 import time
 import numpy as np
 
-from models.faster_rcnn import FasterRCNN
+from models.faster_rcnn import mobilenetv2_fasterRCNN, resnet50fpn_fasterRCNN, resnet50_fasterRCNN
 from datasets.datamatrix import DataMatrixDataset 
 from utils.evaluation import convert_to_coco_api, CocoEvaluator
 from utils.prepare_data import get_tfms_faster,transform_inputs, collate_fn
@@ -46,7 +46,12 @@ def evaluate(model,data_loader,device):
 args = get_arguments()
 
 if args.model == 'faster':
-    model = FasterRCNN(2)
+    if (args.feature_extractor == 'mobilenetv2'):
+        model = mobilenetv2_fasterRCNN(2)
+    elif (args.feature_extractor == 'resnet50fpn'):
+        model = resnet50fpn_fasterRCNN(2)
+    elif (args.feature_extractor == 'resnet50'):
+        model = resnet50_fasterRCNN(2)
 else:
     sys.exit("You did not pick the right script! Exiting...")
 

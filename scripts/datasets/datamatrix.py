@@ -5,7 +5,7 @@ import pandas as pd
 import cv2
 
 
-PATH = "/home/tmr/data-matrix-dataset-loading/dataset_resized_4/"
+PATH = "/home/tmr/data-matrix-dataset-loading/dataset/"
 PATH_IMAGES = os.path.join(PATH, "images")
 PATH_LABELS = os.path.join(PATH, "labels")
 
@@ -80,7 +80,7 @@ class DataMatrixDataset(object):
             target['boxes'] = torch.as_tensor(augmented['bboxes'],  dtype = torch.float32)
             target['labels'] = torch.as_tensor(augmented['labels'], dtype = torch.int64)
             
-        elif (self.transforms is not None and self.target_transform is not None): #SSD
+        elif (self.transforms is not None) and (self.target_transform is not None): #SSD
             img, boxes, labels = self.transforms(img, boxes_ssd, labels_ssd)
             target['boxes'] = boxes
             target['labels'] = labels
