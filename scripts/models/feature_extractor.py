@@ -9,12 +9,7 @@ import math
 # MobileNetV2 from torchvision
 def resnet50_pt():
     resnet = torchvision.models.resnet50(pretrained=True)
-    # layers_tr = ["layer4", "layer3", "layer2", "layer1", "conv1"][:3]
-    # for name, parameter in resnet.named_parameters():
-    #     if all([not name.startswith(layer) for layer in layers_tr]):
-    #         parameter.requires_grad_(False)
-            
-    modules = list(resnet.children())[:-1] # delete the last fc layer.
+    modules = list(resnet.children())[:-2] # delete the last fc layer.
     features = nn.Sequential(*modules)
 
     return features

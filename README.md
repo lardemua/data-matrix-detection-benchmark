@@ -60,7 +60,7 @@ framerate: 5fps
 ### Resnet50
 To train:
 ````
-python train_faster.py --batch_size 4 --learning_rate 1e-6 --epochs 25 --feature_extractor resnet50
+python train_faster.py --batch_size 2 --learning_rate 1e-3 --epochs 50 --feature_extractor resnet50
 ````
 
 To evaluate:
@@ -68,18 +68,22 @@ To evaluate:
 python eval_faster.py --state_dict <PATH to model.pth> --feature_extractor resnet50
 ````
 
+Evaluation:
 
-
-
-
-
-
-
-
-
-
-
-
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.475    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.750    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.518    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.115    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.403    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.620    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.241    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.549    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.554    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.286    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.479    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.694    |
 
 
 
