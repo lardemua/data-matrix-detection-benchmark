@@ -6,13 +6,14 @@ Benchmark for the detection of data matrix landmarks using Deep Learning archite
 - [Overview](#overview)
 - [Table of Contents](#table-of-contents)
 - [Hardware](#hardware) 
-- [Object Detection](#object-detection)
-  * [Faster RCNN](#faster-rcnn)
+- [Faster RCNN](#faster-rcnn)
     * [Resnet50FPN](#resnet50fpn)
     * [Resnet50](#resnet50)
     * [MobileNetV2](#mobilenetv2)
-  * [SSD512](#ssd512)
-  * [YOLOV3](#yolov3)
+- [SSD512](#ssd512)
+    * [Resnet50](#resnet50)
+    * [MobileNetV2](#mobilenetv2)
+- [YOLOV3](#yolov3)
 
 
 # Overview
@@ -121,6 +122,36 @@ frame rate: 10 fps
 
 ## SSD512
 
+### Resnet50
+
+To train:
+````
+python train_ssd.py --model ssd512 --batch_size 16 --learning_rate 1e-3 --weight_decay 4e-5 --epochs 300 --feature_extractor resnet50
+````
+
+To evaluate:
+````
+python eval_ssd.py --model ssd512 --feature_extractor resnet50 --state_dict <PATH to model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.398    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.619    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.455    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.000    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.290    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.525    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.220    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.468    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.468    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.000    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.321    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.617    |
+
+
 ### MobileNetV2
 
 To train:
@@ -171,17 +202,7 @@ Evaluation(mosaic mode):
 
 framerate:7fps
 
-### Resnet50
 
-To train:
-````
-python train_ssd.py --model ssd512 --batch_size 16 --learning_rate 1e-3 --weight_decay 4e-5 --epochs 300 --feature_extractor resnet50
-````
-
-To evaluate:
-````
-python eval_ssd.py --model ssd512 --feature_extractor resnet50 --state_dict <PATH to model.pth>
-````
 
 
 ## YOLOV3
