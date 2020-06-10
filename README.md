@@ -151,6 +151,8 @@ Evaluation:
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.321    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.617    |
 
+framerate: 58 fps
+
 
 ### MobileNetV2
 
