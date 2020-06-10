@@ -247,18 +247,18 @@ class ExtraResidual(nn.Module):
         
         self.use_res_connect = inp == oup
         self.conv = nn.Sequential(
-            nn.Conv2d(inp, hidden_dim, 1, 1, bias=False),
+            nn.Conv2d(inp, hidden_dim, kernel_size = 1, stride = 1, bias=False),
             nn.BatchNorm2d(hidden_dim),
             nn.ReLU(inplace = True),
-            nn.Conv2d(hidden_dim, oup, 3, 1, 1, bias=False),
+            nn.Conv2d(hidden_dim, oup, kernel_size = 3, stride = 2, padding = 1, bias=False),
             nn.BatchNorm2d(oup),
         )
     
     def forward(self, x):
-        if self.use_res_connect:
-            return x + self.conv(x)
-        else:
-            return self.conv(x)                
+        # if self.use_res_connect:
+        #     return x + self.conv(x)
+        # else:
+        return self.conv(x)                
 
 class Resnet50(nn.Module):
     def __init__(self, block, num_blocks, size):

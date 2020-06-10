@@ -121,6 +121,7 @@ frame rate: 10 fps
 
 ## SSD512
 
+### MobileNetV2
 
 To train:
 ````
@@ -129,7 +130,7 @@ python train_ssd.py --model ssd512 --batch_size 16 --learning_rate 1e-3 --weight
 
 To evaluate:
 ````
-python eval_ssd.py --model ssd512 -state_dict <PATH to model.pth>
+python eval_ssd.py --model ssd512 --state_dict <PATH to model.pth>
 ````
 
 Evaluation:
@@ -169,6 +170,18 @@ Evaluation(mosaic mode):
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.602    |
 
 framerate:7fps
+
+### Resnet50
+
+To train:
+````
+python train_ssd.py --model ssd512 --batch_size 16 --learning_rate 1e-3 --weight_decay 4e-5 --epochs 300 --feature_extractor resnet50
+````
+
+To evaluate:
+````
+python eval_ssd.py --model ssd512 --feature_extractor resnet50 --state_dict <PATH to model.pth>
+````
 
 
 ## YOLOV3

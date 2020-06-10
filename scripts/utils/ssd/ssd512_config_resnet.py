@@ -19,6 +19,15 @@ specs = [
     SSDSpec(2, 256, SSDBoxSizes(378.88, 460.8), [2]),
     SSDSpec(1, 512, SSDBoxSizes(460.8, 542.72), [2])
 ]
+# specs = [
+#     SSDSpec(64, 8, SSDBoxSizes(35.84, 76.8), [2]),
+#     SSDSpec(32, 16, SSDBoxSizes(76.8, 153.6), [2, 3]),
+#     SSDSpec(16, 32, SSDBoxSizes(153.6, 230.4), [2, 3]),
+#     SSDSpec(8, 64, SSDBoxSizes(230.4,  307.2), [2, 3]),
+#     SSDSpec(4, 128, SSDBoxSizes(307.2, 384.0), [2, 3]),
+#     SSDSpec(2, 256, SSDBoxSizes(384.0, 460.8), [2]),
+#     SSDSpec(1, 512, SSDBoxSizes(460.8, 537.6), [2])
+# ]
 
 
 priors = generate_ssd_priors(specs, image_size)
