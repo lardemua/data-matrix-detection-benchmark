@@ -17,7 +17,7 @@ from ignite.contrib.handlers import ProgressBar
 
 #My modules
 from datasets.datamatrix import DataMatrixDataset
-from models.ssd.ssd import MobileNetV2SSD_Lite
+from models.ssd.ssd import MobileNetV2SSD_Lite, Resnet50SSD
 from utils.tools import get_arguments, get_scheduler
 from utils.ssd.ssd_utils import MultiboxLoss, MatchPrior, freeze_net_layers
 from utils.ssd.transforms_ssd import TrainAugmentation
@@ -35,16 +35,17 @@ else:
 torch.cuda.set_device(local_rank)
 device = torch.device('cuda')
 
-if (args.model == 'ssd300'):
-    from utils.ssd import ssd300_config as config
 
-elif  (args.model == 'ssd512'):
+if  (args.model == "ssd512") and (args.feature_extractor == "mobilenetv2"):
     from utils.ssd import ssd512_config as config
-    
+    model = MobileNetV2SSD_Lite(2, device)
+elif (args.model == "ssd512") and (args.feature_extractor == 'resnet50'):
+    from utils.ssd import ssd512_config_resnet as config
+    model = Resnet50SSD(2, device)
 else:
     sys.exit("You did not pick the right script! Exiting...")
 
-model = MobileNetV2SSD_Lite(2, device, model = args.model)
+
 target_transform = MatchPrior(config.priors,
                               config.center_variance,
                               config.size_variance,
@@ -171,7 +172,7 @@ if local_rank == 0:
     ProgressBar(persist=True) \
         .attach(trainer, ['loss', 'lr'])
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = 'checkpoints/' + args.model +  '/{}'.format(dirname)
+    dirname = 'checkpoints/' + args.feature_extractor + args.model +  '/{}'.format(dirname)
     checkpointer = ModelCheckpoint(
         dirname=dirname,
         filename_prefix=args.model,

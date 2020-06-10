@@ -6,11 +6,9 @@ from typing import List, Tuple
 from collections import namedtuple
 import sys
 sys.path.append("..") 
-from ..feature_extractor import MobileNetV2, InvertedResidual 
+from ..feature_extractor import MobileNetV2, InvertedResidual, ExtraResidual, Resnet50, Bottleneck 
 from utils.ssd.ssd_utils import convert_locations_to_boxes, center_form_to_corner_form
 
-
-# Based on https://github.com/qfgaohao/pytorch-ssd/blob/7174f33aa2a1540f90d827d48dea681ec1a2856c/vision/ssd/mobilenetv1_ssd.py#L10
 
 GraphPath = namedtuple("GraphPath", ['s0', 'name', 's1'])
 class SSD(nn.Module):
@@ -82,7 +80,6 @@ class SSD(nn.Module):
         for layer in self.base_net[end_layer_index:]:
             x = layer(x)
 
-
         for layer in self.extras:
             x = layer(x)
             confidence, location = self.compute_header(header_index, x) # Extra layers results
@@ -145,6 +142,59 @@ class SSD(nn.Module):
         torch.save(self.state_dict(), model_path)
 
 
+
+# ResNet50
+
+def Resnet50SSD(num_classes, device, width_mult=1.0, use_batch_norm=True, onnx_compatible=False, is_test=False):
+    sys.path.append("..")
+    from utils.ssd import ssd512_config_resnet as config 
+    inp_size = config.image_size
+    resnet50 = Resnet50(Bottleneck, [3, 4, 6, 3], inp_size)
+    base_net = resnet50.features
+    source_layer_indexes = [
+        8,
+        14,
+        len(base_net),
+    ]
+    extra_layers = ModuleList([
+        ExtraResidual(512, 256, 0.5), #input should be equal to resnet50.inchannel
+        ExtraResidual(256,256, 0.5),
+        ExtraResidual(256,256, 0.5),
+        ExtraResidual(256,256, 0.5)
+        ])
+    arm_channels = [512, 1024, 512, 256, 256, 256, 256]
+
+    num_anchors = [4, 6, 6, 6, 6, 4, 4]
+    regression_list = []
+    classification_list = []
+    for i in range(len(arm_channels)):
+        regression_list += [
+                        nn.Conv2d(
+                        arm_channels[i],
+                        num_anchors[i] * 4,
+                        kernel_size=3,
+                        padding=1)
+                ]
+        classification_list += [
+                        nn.Conv2d(
+                        arm_channels[i],
+                        num_anchors[i] * num_classes,
+                        kernel_size=3,
+                        padding=1)
+                ]
+    regression_headers = ModuleList(regression_list)
+    classification_headers = ModuleList(classification_list)
+    return SSD(num_classes, 
+               base_net, 
+               source_layer_indexes,
+               extra_layers, 
+               classification_headers, 
+               regression_headers, 
+               is_test = is_test, 
+               config = config, 
+               device = device)
+
+
 # MobileNetV2 Lite
 
 def SeperableConv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0, onnx_compatible=False):
@@ -160,14 +210,10 @@ def SeperableConv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=
     )
 
 
-def MobileNetV2SSD_Lite(num_classes, device, model = "ssd300", width_mult=1.0, use_batch_norm=True, onnx_compatible=False, is_test=False):
+def MobileNetV2SSD_Lite(num_classes, device, width_mult=1.0, use_batch_norm=True, onnx_compatible=False, is_test=False):
     sys.path.append("..")
-    if model == "ssd300":
-        from utils.ssd import ssd300_config as config
-        n_last_chans = 6
-    else:
-        from utils.ssd import ssd512_config as config 
-        n_last_chans = 4
+    from utils.ssd import ssd512_config as config 
+    n_last_chans = 4
     base_net = MobileNetV2(width_mult=width_mult, use_batch_norm=use_batch_norm,
                            onnx_compatible=onnx_compatible).features
 
