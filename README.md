@@ -23,11 +23,10 @@ This repo is an aggregation of Faster RCNN, SSD512 and YOLOV3(608) for Data Matr
 
 Training and Evaluation: Nvidia RTX2080ti
 
-# Object Detection
 
-## Faster RCNN
+# Faster RCNN
 
-### Resnet50FPN
+## Resnet50FPN
 
 To train:
 ````
@@ -58,7 +57,7 @@ Evaluation:
 
 framerate: 5fps
 
-### Resnet50
+## Resnet50
 To train:
 ````
 python train_faster.py --batch_size 2 --learning_rate 1e-3 --epochs 50 --feature_extractor resnet50
@@ -89,7 +88,7 @@ Evaluation:
 
 
 
-### MobileNetV2
+## MobileNetV2
 
 To train:
 ````
@@ -120,9 +119,9 @@ Evaluation:
 
 frame rate: 10 fps
 
-## SSD512
+# SSD512
 
-### Resnet50
+## Resnet50
 
 To train:
 ````
@@ -154,7 +153,7 @@ Evaluation:
 framerate: 58 fps
 
 
-### MobileNetV2
+## MobileNetV2
 
 To train:
 ````
@@ -207,7 +206,7 @@ framerate:7fps
 
 
 
-## YOLOV3
+# YOLOV3
 
 To train:
 ````
