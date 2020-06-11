@@ -220,5 +220,6 @@ Evaluation:
 
 # Acknowledgements
 
-Repos: [MobileNetV2 + Single Shot Multibox Detector](#https://github.com/qfgaohao/pytorch-ssd)
+Repos: [MobileNetV2 + Single Shot Multibox Detector](https://github.com/qfgaohao/pytorch-ssd)
+
 Project: This work was supported by the PRODUTECH II SIF-POCI-01-0247-FEDER-024541 Project.
