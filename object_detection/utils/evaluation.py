@@ -33,13 +33,11 @@ class CocoEvaluator(object):
         create_common_coco_eval(self.coco_eval['bbox'], self.img_ids, self.eval_imgs['bbox'])
 
     def accumulate(self):
-        print(self.coco_eval.values())
         for coco_eval in self.coco_eval.values():
             coco_eval.accumulate()
 
     def summarize(self):
         for iou_type, coco_eval in self.coco_eval.items():
-            print("IoU metric: {}".format(iou_type))
             coco_eval.summarize()
 
     def prepare_for_coco_detection(self, predictions):

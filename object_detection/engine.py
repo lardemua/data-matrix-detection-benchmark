@@ -1,11 +1,18 @@
-from ignite.engine import Engine, Events, _prepare_batch
-from ignite.engine import create_supervised_evaluator
+import copy
+import torch
+from ignite.engine import (Engine, 
+                           Events, 
+                           _prepare_batch, 
+                           create_supervised_evaluator)
 from ignite.metrics import RunningAverage, Loss
 from object_detection.utils.prepare_data import transform_inputs
 from ignite.contrib.handlers import ProgressBar
+from object_detection.utils.evaluation import CocoEvaluator
+
 
 __all__ = [
     "create_detection_trainer",
+    "create_detection_evaluator"
 ]
 
 def train_data(model_name, model, batch, loss_fn, device):
@@ -30,7 +37,14 @@ def train_data(model_name, model, batch, loss_fn, device):
         
 
 
-def create_detection_trainer(model_name, model, optimizer, device, loss_fn = None, logging = True):
+def create_detection_trainer(model_name, 
+                             model, 
+                             optimizer, 
+                             device, 
+                             val_loader,
+                             evaluator, 
+                             loss_fn = None, 
+                             logging = True):
     def update_fn(_trainer, batch):
         """Training function
         Keyword arguments:
@@ -43,6 +57,7 @@ def create_detection_trainer(model_name, model, optimizer, device, loss_fn = Non
         optimizer.step()
         
         return loss.item()
+    
     trainer = Engine(update_fn)
     RunningAverage(output_transform=lambda x: x) \
     .attach(trainer, 'loss')
@@ -53,9 +68,63 @@ def create_detection_trainer(model_name, model, optimizer, device, loss_fn = Non
         for h in ['lr', 'momentum', 'weight_decay']:
             if h in param_groups.keys():
                 engine.state.metrics[h] = param_groups[h]
+    
+    @trainer.on(Events.EPOCH_COMPLETED)
+    def on_epoch_completed(engine):
+        evaluator.run(val_loader)
 
     if logging:
         ProgressBar(persist=True) \
             .attach(trainer, ['loss', 'lr'])
 
     return trainer
+
+
+
+def create_detection_evaluator(model, device, coco_api_val_dataset):
+    def update_model(engine, batch):
+        images, targets = batch
+        images, targets = transform_inputs(images, targets, device)
+        images_model = copy.deepcopy(images)
+
+        torch.cuda.synchronize()
+        with torch.no_grad():
+            outputs = model(images_model)
+
+        outputs = [{k: v.to(device) for k, v in t.items()} for t in outputs]
+
+        res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
+        engine.state.coco_evaluator.update(res)
+
+        images_model = outputs = None
+
+        return images, targets, res
+    
+    evaluator = Engine(update_model)
+    ProgressBar(persist=False) \
+        .attach(evaluator)
+    
+    @evaluator.on(Events.STARTED)
+    def on_evaluation_started(engine):
+        model.eval()
+        engine.state.coco_evaluator = CocoEvaluator(coco_api_val_dataset)
+            
+    @evaluator.on(Events.COMPLETED)
+    def on_evaluation_completed(engine):
+        engine.state.coco_evaluator.synchronize_between_processes()
+        print("\nResults val set:")
+        engine.state.coco_evaluator.accumulate()
+        engine.state.coco_evaluator.summarize()
+     
+        
+        
+    return evaluator
+
+
+
+
+    
+
+                
+
+

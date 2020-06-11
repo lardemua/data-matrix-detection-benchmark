@@ -1,9 +1,10 @@
 import torch
 import torch.optim as optim
-import sys
 from torch import distributed as dist
 from torch.utils.data import (DataLoader, DistributedSampler)
 from time import localtime, strftime
+from itertools import chain
+import sys
 
 from apex.parallel import (DistributedDataParallel, convert_syncbn_model)
 
@@ -19,7 +20,10 @@ from object_detection.utils.prepare_data import (get_tfms_faster,
                                                  collate_fn, 
                                           transform_inputs)
 from object_detection.utils.tools import (get_arguments, get_scheduler)
-from object_detection.engine import create_detection_trainer
+from object_detection.engine import (create_detection_trainer, create_detection_evaluator)
+from object_detection.utils.evaluation import convert_to_coco_api
+
+
 
 
 args = get_arguments()
@@ -39,15 +43,17 @@ device = torch.device("cuda")
 train_tfms, val_tfms = get_tfms_faster()
 if args.dataset == "datamatrix":
   train_ds = DataMatrixDataset(transforms = train_tfms)
+  val_ds = DataMatrixDataset(transforms = val_tfms, mode = 'val')
+
 
 if args.distributed:
     kwargs = dict(num_replicas=world_size, rank=local_rank)
     train_sampler = DistributedSampler(train_ds, **kwargs)
     kwargs["shuffle"] = False
-    # val_sampler = DistributedSampler(val_dataset, **kwargs)
+    val_sampler = DistributedSampler(val_ds, **kwargs)
 else:
     train_sampler = None
-    # val_sampler = None
+    val_sampler = None
 
 train_loader = DataLoader(
     train_ds,
@@ -59,15 +65,16 @@ train_loader = DataLoader(
     collate_fn=collate_fn,
 )
 
-# val_loader = DataLoader(
-#     val_ds,
-#     batch_size=4,
-#     shuffle=False,
-#     drop_last=False,
-#     num_workers=8,
-#     sampler=val_sampler,
-# )
-
+val_loader = DataLoader(
+    val_ds,
+    batch_size=args.batch_size,
+    shuffle=False,
+    drop_last=False,
+    num_workers=args.workers,
+    sampler=val_sampler,
+    collate_fn=collate_fn
+)
+coco_api_val_dataset = convert_to_coco_api(val_ds)
 
 if (args.model == "faster"):
     if (args.feature_extractor == "mobilenetv2"):
@@ -100,10 +107,13 @@ if args.distributed:
     model = DistributedDataParallel(model)
 
 
+evaluator = create_detection_evaluator(model, device, coco_api_val_dataset)
 trainer = create_detection_trainer(args.model, 
                                    model, 
                                    optimizer, 
                                    device,
+                                   val_loader,
+                                   evaluator,
                                    loss_fn = None,
                                    logging = local_rank == 0
                                    )
@@ -111,6 +121,7 @@ trainer = create_detection_trainer(args.model,
 trainer.add_event_handler(
     Events.ITERATION_COMPLETED, scheduler,
 )
+
 
 if local_rank == 0:
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
