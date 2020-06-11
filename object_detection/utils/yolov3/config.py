@@ -19,8 +19,8 @@ training_params = {
         "decay_step": 20,
     },
     "input_shape": {
-        "height": 512,
-        "width": 512,
+        "height": 608,#416,
+        "width": 608,#416,
     },
     "export_onnx": False,
     

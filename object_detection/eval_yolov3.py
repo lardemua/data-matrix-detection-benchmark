@@ -31,6 +31,7 @@ def evaluate(net, val_ds, device):
     coco = convert_to_coco_api(val_ds)
     coco_evaluator = CocoEvaluator(coco)
     evaluator_times = []
+    processing_times = []
     it = iter(val_ds)
     yolo_losses = []
     for l in range(3):
@@ -42,8 +43,10 @@ def evaluate(net, val_ds, device):
         img = sample[0]
         target = sample[1]
         img_proc = preprocess_frame(img)
+        init_time = time.time()
         with torch.no_grad():
             outputs = net(img_proc.to(device))
+        processing_times.append(time.time() - init_time)
         output_list = []
         for ll in range(3):
             output_list.append(yolo_losses[ll](outputs[ll]))
@@ -75,6 +78,7 @@ def evaluate(net, val_ds, device):
             continue
             
     print("Averaged stats:", np.mean(evaluator_times))
+    print("Averaged proc time:", np.mean(processing_times))
     coco_evaluator.synchronize_between_processes()
     # accumulate predictions from all images
     coco_evaluator.accumulate()

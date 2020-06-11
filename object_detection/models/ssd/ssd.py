@@ -1,13 +1,17 @@
 import torch
-from torch.nn import Conv2d, Sequential, ModuleList, ReLU, BatchNorm2d
+from torch.nn import (Conv2d, Sequential, ModuleList, ReLU, BatchNorm2d)
 import torch.nn as nn
 import torch.nn.functional as F
 from typing import List, Tuple
 from collections import namedtuple
 import sys
-sys.path.append("..") 
-from ..feature_extractor import MobileNetV2, InvertedResidual, ExtraResidual, Resnet50, Bottleneck 
-from utils.ssd.ssd_utils import convert_locations_to_boxes, center_form_to_corner_form
+from object_detection.models.feature_extractor import (MobileNetV2, 
+                                                       InvertedResidual, 
+                                                       ExtraResidual, 
+                                                       Resnet50, 
+                                                       Bottleneck) 
+from object_detection.utils.ssd.ssd_utils import (convert_locations_to_boxes, 
+                                                  center_form_to_corner_form)
 
 
 GraphPath = namedtuple("GraphPath", ['s0', 'name', 's1'])
@@ -146,8 +150,7 @@ class SSD(nn.Module):
 # ResNet50
 
 def Resnet50SSD(num_classes, device, width_mult=1.0, use_batch_norm=True, onnx_compatible=False, is_test=False):
-    sys.path.append("..")
-    from utils.ssd import ssd512_config_resnet as config 
+    from object_detection.utils.ssd import ssd512_config_resnet as config 
     inp_size = config.image_size
     resnet50 = Resnet50(Bottleneck, [3, 4, 6, 3], inp_size)
     base_net = resnet50.features
@@ -211,8 +214,7 @@ def SeperableConv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=
 
 
 def MobileNetV2SSD_Lite(num_classes, device, width_mult=1.0, use_batch_norm=True, onnx_compatible=False, is_test=False):
-    sys.path.append("..")
-    from utils.ssd import ssd512_config as config 
+    from object_detection.utils.ssd import ssd512_config as config 
     n_last_chans = 4
     base_net = MobileNetV2(width_mult=width_mult, use_batch_norm=use_batch_norm,
                            onnx_compatible=onnx_compatible).features

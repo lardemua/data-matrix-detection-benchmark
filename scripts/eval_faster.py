@@ -3,11 +3,11 @@ from torch.utils.data import DataLoader
 import time
 import numpy as np
 
-from models.faster_rcnn import mobilenetv2_fasterRCNN, resnet50fpn_fasterRCNN, resnet50_fasterRCNN
-from datasets.datamatrix import DataMatrixDataset 
-from utils.evaluation import convert_to_coco_api, CocoEvaluator
-from utils.prepare_data import get_tfms_faster,transform_inputs, collate_fn
-from utils.tools import get_arguments
+from object_detection.models.faster_rcnn import mobilenetv2_fasterRCNN, resnet50fpn_fasterRCNN, resnet50_fasterRCNN
+from object_detection.datasets.datamatrix import DataMatrixDataset 
+from object_detection.utils.evaluation import convert_to_coco_api, CocoEvaluator
+from object_detection.utils.prepare_data import get_tfms_faster,transform_inputs, collate_fn
+from object_detection.utils.tools import get_arguments
 
 @torch.no_grad()
 def evaluate(model,data_loader,device):

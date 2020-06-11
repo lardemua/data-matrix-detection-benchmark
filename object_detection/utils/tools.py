@@ -25,11 +25,11 @@ def get_arguments():
     parser.add_argument(
         "--model",
         "-m",
-        choices = ["faster", "ssd300", "ssd512", "yolov3"],
+        choices = ["faster", "ssd512", "yolov3"],
         default = 'faster',
         help = ("Model to train; "
-                "Default: faster-rcnn; "
-                "Possible choices: faster-rcnn, ssd300 and ssd512 for now")
+                "Default: faster; "
+                "Possible choices: faster-rcnn, ssd512 and yolov3")
     )
     
     #backbone choice

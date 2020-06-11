@@ -27,9 +27,8 @@ class DataMatrixDataset(object):
         
     def __getitem__(self, idx):
         filename = self.labels_file["External ID"][idx]
-        #img = Image.open(os.path.join(PATH_IMAGES, self.mode, filename)).convert('RGB')
         img = cv2.imread(os.path.join(PATH_IMAGES, self.mode, filename))
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)       
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)       
         width, height = img.shape[1], img.shape[0]
         if height > width:
             img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)

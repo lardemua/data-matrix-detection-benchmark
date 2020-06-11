@@ -15,12 +15,13 @@ from ignite.handlers import ModelCheckpoint, global_step_from_engine
 from ignite.contrib.handlers import ProgressBar
 
 
-#My modules
-from datasets.datamatrix import DataMatrixDataset
-from models.ssd.ssd import MobileNetV2SSD_Lite, Resnet50SSD
-from utils.tools import get_arguments, get_scheduler
-from utils.ssd.ssd_utils import MultiboxLoss, MatchPrior, freeze_net_layers
-from utils.ssd.transforms_ssd import TrainAugmentation
+#object_detection modules
+from object_detection.datasets.datamatrix import DataMatrixDataset
+from object_detection.models.ssd.ssd import MobileNetV2SSD_Lite, Resnet50SSD
+from object_detection.utils.tools import get_arguments, get_scheduler
+from object_detection.utils.ssd.ssd_utils import MultiboxLoss, MatchPrior, freeze_net_layers
+from object_detection.utils.ssd.transforms_ssd import TrainAugmentation
+from object_detection.engine import create_detection_trainer
 
 args = get_arguments()
 
@@ -37,10 +38,10 @@ device = torch.device('cuda')
 
 
 if  (args.model == "ssd512") and (args.feature_extractor == "mobilenetv2"):
-    from utils.ssd import ssd512_config as config
+    from object_detection.utils.ssd import ssd512_config as config
     model = MobileNetV2SSD_Lite(2, device)
 elif (args.model == "ssd512") and (args.feature_extractor == 'resnet50'):
-    from utils.ssd import ssd512_config_resnet as config
+    from object_detection.utils.ssd import ssd512_config_resnet as config
     model = Resnet50SSD(2, device)
 else:
     sys.exit("You did not pick the right script! Exiting...")
@@ -105,9 +106,10 @@ train_loader = DataLoader(
 optimizer = torch.optim.AdamW(params,
                               lr=args.learning_rate,
                               weight_decay=args.weight_decay,)
+
 scheduler = get_scheduler(optimizer,args.epochs, args.learning_rate, len(train_loader))
 
-criterion = MultiboxLoss(config.priors, 
+loss_fn = MultiboxLoss(config.priors, 
                          iou_threshold=0.5, 
                          neg_pos_ratio=3, 
                          center_variance=0.1, 
@@ -120,63 +122,26 @@ if args.distributed:
     model = convert_syncbn_model(model)
     model = DistributedDataParallel(model)
 
+trainer = create_detection_trainer(args.model, 
+                                   model, 
+                                   optimizer, 
+                                   device,
+                                   loss_fn = loss_fn,
+                                   logging = local_rank == 0
+                                   )
 
-
-def update_fn(_trainer, batch):
-    """Training function
-    Keyword arguments:
-    - each bach 
-    """
-    model.train()
-    optimizer.zero_grad()
-
-    images, boxes, labels = batch
-
-    images = images.to(device)
-    boxes = boxes.to(device)
-    labels = labels.to(device)
-
-    confidence, locations = model(images)
-
-    regression_loss, classification_loss = criterion(confidence, locations, labels, boxes)
-    loss = regression_loss + classification_loss
-
-    loss.backward()
-
-    optimizer.step()
-
-    return {
-        'loss_regression': regression_loss,
-        'loss_classifier': classification_loss,
-        'loss': loss 
-    }
-
-
-trainer = Engine(update_fn)
-trainer.add_event_handler(Events.ITERATION_COMPLETED, scheduler)
-
-for name in ['loss', 'loss_classifier', 'loss_regression']:
-    RunningAverage(output_transform=lambda x: x[name]) \
-        .attach(trainer, name)
-    
-# TODO
-# keep 5 best scores in val set
-@trainer.on(Events.ITERATION_COMPLETED)
-def log_optimizer_params(engine):
-    param_groups = optimizer.param_groups[0]
-    for h in ['lr', 'momentum', 'weight_decay']:
-        if h in param_groups.keys():
-            engine.state.metrics[h] = param_groups[h]
+trainer.add_event_handler(
+    Events.ITERATION_COMPLETED, scheduler,
+)
 
 if local_rank == 0:
-    ProgressBar(persist=True) \
-        .attach(trainer, ['loss', 'lr'])
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
     dirname = 'checkpoints/' + args.feature_extractor + args.model +  '/{}'.format(dirname)
     checkpointer = ModelCheckpoint(
         dirname=dirname,
         filename_prefix=args.model,
-        n_saved=10,
+        n_saved=5,
+        global_step_transform=global_step_from_engine(trainer),
     )
     trainer.add_event_handler(
         Events.EPOCH_COMPLETED, checkpointer,

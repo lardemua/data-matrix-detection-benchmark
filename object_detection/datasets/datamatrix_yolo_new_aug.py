@@ -13,11 +13,12 @@ PATH_IMAGES = os.path.join(PATH, "images")
 PATH_LABELS = os.path.join(PATH, "labels")
 
 class DataMatrixDataset(object):
-    def __init__(self, img_size, mode = 'train',  is_debug=False):
+    def __init__(self, transformed = True, mode = 'train',  is_debug=False):
         self.mode = mode
-        self.img_size = img_size
         self.max_objects = 50
         self.is_debug = is_debug
+        self.transforms = None
+        self.transformed = transformed
         
         if self.mode == "train" or self.mode == "val":
             self.imgs = os.listdir(os.path.join(PATH_IMAGES, self.mode))
@@ -28,13 +29,12 @@ class DataMatrixDataset(object):
                 self.labels_file.set_index([pd.Index(idxs)], inplace = True) 
         else:
             raise Exception("Oops. There are only two modes: train and val!")
-        if mode == 'train':
+        if (mode == 'train' and self.transformed):
             self.transforms = TrainAugmentation(config["input_shape"]["height"], np.array([127,127,127]), 128.0)
         
     def __getitem__(self, idx):
         filename = self.labels_file["External ID"][idx]
         img = cv2.imread(os.path.join(PATH_IMAGES, self.mode, filename))
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)       
         width, height = img.shape[1], img.shape[0]
         if height > width:
             img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
@@ -78,6 +78,11 @@ class DataMatrixDataset(object):
             sample = {'image':img, 
                       'label':torch.from_numpy(filled_labels)
                  }
+        else:
+            sample = {
+                "image":img,
+                "label":(labels, boxes) 
+            }
         sample["image_path"] = os.path.join(PATH_IMAGES,self.mode, filename)
         sample["origin_size"] = str([width, height])
         return sample

@@ -1,9 +1,8 @@
 
 import torch
 import sys
-sys.path.append('../..')
-from utils.ssd.ssd_utils import nms
-from utils.ssd.transforms_ssd import PredictionTransform
+from object_detection.utils.ssd.ssd_utils import nms
+from object_detection.utils.ssd.transforms_ssd import PredictionTransform
 
 
 class Predictor:

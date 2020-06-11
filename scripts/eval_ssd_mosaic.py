@@ -3,11 +3,11 @@ import sys
 import numpy as np
 import time 
 
-from models.ssd.ssd import MobileNetV2SSD_Lite, Resnet50SSD
-from datasets.datamatrix import DataMatrixDataset
-from utils.evaluation import convert_to_coco_api, CocoEvaluator
-from utils.tools import get_arguments
-from models.ssd.predictor import Predictor
+from object_detection.models.ssd.ssd import MobileNetV2SSD_Lite, Resnet50SSD
+from object_detection.datasets.datamatrix import DataMatrixDataset
+from object_detection.utils.evaluation import convert_to_coco_api, CocoEvaluator
+from object_detection.utils.tools import get_arguments
+from object_detection.models.ssd.predictor import Predictor
 
 def chop_img(img, min_percent_w = 0.016000000000000014, min_percent_h = 0.03216666666666662, sample_size = 1024):
     height, width = img.shape[0], img.shape[1]
@@ -126,11 +126,11 @@ dev = args.device if args.device is not None else "cpu"
 device = torch.device(dev)
 
 if (args.model == "ssd512" and args.feature_extractor == "mobilenetv2"):
-    from utils.ssd import ssd512_config as config
+    from object_detection.utils.ssd import ssd512_config as config
     net = MobileNetV2SSD_Lite(2,is_test = True, device = device)
 
 elif (args.model == "ssd512" and args.feature_extractor == "resnet50"):
-    from utils.ssd import ssd512_config_resnet as config
+    from object_detection.utils.ssd import ssd512_config_resnet as config
     net = Resnet50SSD(2, is_test = True, device = device)
  
 else:
