@@ -13,9 +13,9 @@ from ignite.handlers import (global_step_from_engine, ModelCheckpoint)
 
 # object_detection modules
 from object_detection.datasets.datamatrix import DataMatrixDataset
-from object_detection.models.faster_rcnn import (resnet50fpn_fasterRCNN, 
-                                                 resnet50_fasterRCNN, 
-                                                 mobilenetv2_fasterRCNN)
+from object_detection.models.faster.faster_rcnn import (resnet50fpn_fasterRCNN, 
+                                                        resnet50_fasterRCNN, 
+                                                        mobilenetv2_fasterRCNN)
 from object_detection.utils.prepare_data import (get_tfms_faster,
                                                  collate_fn, 
                                           transform_inputs)

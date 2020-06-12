@@ -3,7 +3,9 @@ from torch.utils.data import DataLoader
 import time
 import numpy as np
 
-from object_detection.models.faster_rcnn import mobilenetv2_fasterRCNN, resnet50fpn_fasterRCNN, resnet50_fasterRCNN
+from object_detection.models.faster.faster_rcnn import (resnet50fpn_fasterRCNN, 
+                                                        resnet50_fasterRCNN, 
+                                                        mobilenetv2_fasterRCNN)
 from object_detection.datasets.datamatrix import DataMatrixDataset 
 from object_detection.utils.evaluation import convert_to_coco_api, CocoEvaluator
 from object_detection.utils.prepare_data import get_tfms_faster,transform_inputs, collate_fn

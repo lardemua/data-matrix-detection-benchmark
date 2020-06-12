@@ -2,7 +2,8 @@ import torchvision
 from torchvision.models.detection import FasterRCNN as frcnn
 from torchvision.models.detection.rpn import AnchorGenerator
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from .feature_extractor import mobilenetv2_pt, resnet50_pt
+from object_detection.models.backbones.mobilenetv2 import mobilenetv2_pt 
+from object_detection.models.backbones.resnet50 import resnet50_pt
 
 
 def resnet50fpn_fasterRCNN(num_classes):

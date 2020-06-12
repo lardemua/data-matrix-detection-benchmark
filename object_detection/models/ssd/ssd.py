@@ -5,9 +5,8 @@ import torch.nn.functional as F
 from typing import List, Tuple
 from collections import namedtuple
 import sys
-from object_detection.models.feature_extractor import (MobileNetV2, 
-                                                       InvertedResidual, 
-                                                       ExtraResidual, 
+from object_detection.models.backbones.mobilenetv2 import (MobileNetV2, InvertedResidual)
+from object_detection.models.backbones.resnet50 import(ExtraResidual, 
                                                        Resnet50, 
                                                        Bottleneck) 
 from object_detection.utils.ssd.ssd_utils import (convert_locations_to_boxes, 

@@ -3,9 +3,8 @@ import torch.nn as nn
 from collections import OrderedDict
 import sys
 from functools import partial
-from ..feature_extractor import DarkNet53
-sys.path.append("..")
-from utils.yolov3.config import training_params as config
+from object_detection.models.backbones.darknet import DarkNet53
+from object_detection.utils.yolov3.config import training_params as config
 
 
 def yolov3_darknet(config, is_training = True):
