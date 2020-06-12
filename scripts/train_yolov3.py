@@ -1,9 +1,10 @@
 import torch
 import torch.optim as optim
-import sys
-import itertools
 from torch import distributed as dist
 from torch.utils.data import DataLoader, DistributedSampler
+import torch.optim.lr_scheduler as lr_scheduler
+import sys
+import itertools
 from time import localtime, strftime
 
 from apex import amp
@@ -64,7 +65,26 @@ if args.state_dict is not None:
     
 model.to(device)
 
-#Opimitzer    
+# Dataset
+train_ds = LoadImagesAndLabels(train_path, 
+                              img_size, 
+                              args.batch_size,
+                              augment = True,
+                              hyp = hyp,  # augmentation hyperparameters
+                              rect = args.rect)
+
+# Dataloader
+train_loader = torch.utils.data.DataLoader(dataset,
+                                           batch_size=args.batch_size,
+                                           num_workers=args.num_workers,
+                                           shuffle=not args.rect,  # Shuffle=True unless rectangular training is used
+                                           pin_memory=True,
+                                           collate_fn=dataset.collate_fn)
+
+# Testloader
+
+
+#Optimizer    
 pg0, pg1, pg2 = [], [], [] # optimizer parameter groups
 for k, v in dict(model.named_parameters()).items():
     if ".bias" in k:
@@ -77,3 +97,6 @@ optimizer = optim.SGD(pg0, lr=hyp['lr0'], momentum=hyp['momentum'], nesterov=Tru
 optimizer.add_param_group({'params': pg1, 'weight_decay': hyp['weight_decay']})  # add pg1 with weight_decay
 optimizer.add_param_group({'params': pg2})  # add pg2 (biases)
 del pg0, pg1, pg2
+
+#Scheduler 
+scheduler = get_scheduler(optimizer,args.epochs, args.learning_rate, len(train_loader))
