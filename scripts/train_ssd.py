@@ -9,10 +9,8 @@ from time import localtime, strftime
 from apex import amp
 from apex.parallel import (DistributedDataParallel, convert_syncbn_model)
 
-from ignite.engine import Engine, Events, _prepare_batch
-from ignite.metrics import RunningAverage, Loss
-from ignite.handlers import ModelCheckpoint, global_step_from_engine
-from ignite.contrib.handlers import ProgressBar
+from ignite.engine import Events
+from ignite.handlers import (global_step_from_engine, ModelCheckpoint)
 
 
 #object_detection modules
