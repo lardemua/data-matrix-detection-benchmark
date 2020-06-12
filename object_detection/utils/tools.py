@@ -88,12 +88,7 @@ def get_arguments():
         default = 'cuda:0',
         help = "Device on which the network will be trained; Default: cuda:2"
     )
-    parser.add_argument(
-        "--save-model",
-        "-sm",
-        default = 'model.pth',
-        help = "Name of the file to save the model"
-    )
+  
     parser.add_argument(
         "--distributed",
         "-dist",
@@ -107,13 +102,23 @@ def get_arguments():
         '--state_dict',
         '-sd', 
         type=str, 
-        required=False)
+        required=False
+    )
 
     parser.add_argument(
         '--pretrained_model',
         '-pm',
         type=str,
-        required=False)
+        required=False
+    )
+    
+    parser.add_argument(
+        '--yolo_config',
+        '-cfg',
+        default='object_detection/utils/yolo/yolov3.cfg',
+        type=str,
+        required=False
+    )
 
     
     
