@@ -19,12 +19,11 @@ from ignite.contrib.handlers import ProgressBar
 from object_detection.datasets.datamatrix import DataMatrixDataset
 from object_detection.models.ssd.ssd import (MobileNetV2SSD_Lite, Resnet50SSD)
 from object_detection.utils.tools import (get_arguments, get_scheduler)
-from object_detection.utils.ssd.ssd_utils import (MultiboxLoss, 
-                                                  MatchPrior, 
-                                                  freeze_net_layers)
+from object_detection.utils.ssd.ssd_utils import  MatchPrior, freeze_net_layers
 from object_detection.utils.ssd.transforms_ssd import (TrainAugmentation, TestTransform)
 from object_detection.engine import (create_detection_trainer, create_detection_evaluator)
 from object_detection.utils.evaluation import convert_to_coco_api
+from object_detection.losses.multibox import MultiboxLoss
 
 
 args = get_arguments()

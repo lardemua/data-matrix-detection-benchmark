@@ -71,7 +71,7 @@ def create_detection_trainer(model_name,
             if h in param_groups.keys():
                 engine.state.metrics[h] = param_groups[h]
     
-    @trainer.on(Events.EPOCH_COMPLETED(every=2))
+    @trainer.on(Events.EPOCH_COMPLETED)
     def on_epoch_completed(engine):
         evaluator.run(val_loader)
 
