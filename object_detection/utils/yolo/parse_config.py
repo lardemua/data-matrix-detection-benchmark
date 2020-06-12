@@ -48,3 +48,4 @@ def parse_model_cfg(path):
     assert not any(u), "Unsupported fields %s in %s. See https://github.com/ultralytics/yolov3/issues/631" % (u, path)
 
     return mdefs
+

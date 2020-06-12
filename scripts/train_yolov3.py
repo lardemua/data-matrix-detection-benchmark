@@ -19,10 +19,26 @@ from object_detection.models.yolov3.yolov3_darknet import Darknet
 
 
 
+# Hyperparameters (results68: 59.9 mAP@0.5 yolov3-spp-416) https://github.com/ultralytics/yolov3/issues/310
 
-
-
-
+hyp = {'giou': 1.0,  # giou loss gain
+       'cls': 37.4,  # cls loss gain
+       'cls_pw': 1.0,  # cls BCELoss positive_weight
+       'obj': 64.3,  # obj loss gain (*=img_size/320 if img_size != 320)
+       'obj_pw': 1.0,  # obj BCELoss positive_weight
+       'iou_t': 0.225,  # iou training threshold
+       'lr0': 0.001,  # initial learning rate (SGD=5E-3, Adam=5E-4)
+       'lrf': -4.,  # final LambdaLR learning rate = lr0 * (10 ** lrf)
+       'momentum': 0.937,  # SGD momentum
+       'weight_decay': 0.000484,  # optimizer weight decay
+       'fl_gamma': 0.0,  # focal loss gamma (efficientDet default is gamma=1.5)
+       'hsv_h': 0.0138,  # image HSV-Hue augmentation (fraction)
+       'hsv_s': 0.678,  # image HSV-Saturation augmentation (fraction)
+       'hsv_v': 0.36,  # image HSV-Value augmentation (fraction)
+       'degrees': 1.98 * 0,  # image rotation (+/- deg)
+       'translate': 0.05 * 0,  # image translation (+/- fraction)
+       'scale': 0.05 * 0,  # image scale (+/- gain)
+       'shear': 0.641 * 0}  # image shear (+/- deg)
 
 
 args = get_arguments()
@@ -40,4 +56,24 @@ device = torch.device('cuda')
 
 # Model
 if (args.model == "yolov3"):
-    model = Darknet(args.yolo_config).to(device)
+    model = Darknet(args.yolo_config)
+
+if args.state_dict is not None:
+    state_dict = torch.load(args.state_dict, map_location='cpu')
+    model.load_state_dict(state_dict, strict=True)
+    
+model.to(device)
+
+#Opimitzer    
+pg0, pg1, pg2 = [], [], [] # optimizer parameter groups
+for k, v in dict(model.named_parameters()).items():
+    if ".bias" in k:
+        pg2 += [v]
+    elif "Conv2d.weight" in k:
+        pg1 += [v]
+    else:
+        pg0 += [v]    
+optimizer = optim.SGD(pg0, lr=hyp['lr0'], momentum=hyp['momentum'], nesterov=True)
+optimizer.add_param_group({'params': pg1, 'weight_decay': hyp['weight_decay']})  # add pg1 with weight_decay
+optimizer.add_param_group({'params': pg2})  # add pg2 (biases)
+del pg0, pg1, pg2
