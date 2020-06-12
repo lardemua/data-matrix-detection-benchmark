@@ -17,16 +17,20 @@ from ignite.contrib.handlers import ProgressBar
 
 #object_detection modules
 from object_detection.datasets.datamatrix import DataMatrixDataset
-from object_detection.models.ssd.ssd import MobileNetV2SSD_Lite, Resnet50SSD
-from object_detection.utils.tools import get_arguments, get_scheduler
-from object_detection.utils.ssd.ssd_utils import MultiboxLoss, MatchPrior, freeze_net_layers
-from object_detection.utils.ssd.transforms_ssd import TrainAugmentation
-from object_detection.engine import create_detection_trainer
+from object_detection.models.ssd.ssd import (MobileNetV2SSD_Lite, Resnet50SSD)
+from object_detection.utils.tools import (get_arguments, get_scheduler)
+from object_detection.utils.ssd.ssd_utils import (MultiboxLoss, 
+                                                  MatchPrior, 
+                                                  freeze_net_layers)
+from object_detection.utils.ssd.transforms_ssd import (TrainAugmentation, TestTransform)
+from object_detection.engine import (create_detection_trainer, create_detection_evaluator)
+from object_detection.utils.evaluation import convert_to_coco_api
+
 
 args = get_arguments()
 
 if args.distributed:
-    dist.init_process_group('nccl', init_method='env://')
+    dist.init_process_group("nccl", init_method = "env://")
     world_size = dist.get_world_size()
     world_rank = dist.get_rank()
     local_rank = args.local_rank
@@ -34,7 +38,7 @@ else:
     local_rank = 0
 
 torch.cuda.set_device(local_rank)
-device = torch.device('cuda')
+device = torch.device("cuda")
 
 
 if  (args.model == "ssd512") and (args.feature_extractor == "mobilenetv2"):
@@ -53,6 +57,7 @@ target_transform = MatchPrior(config.priors,
                               0.5)
 
 train_tfms = TrainAugmentation(config.image_size, config.image_mean, config.image_std)
+test_tfms = TestTransform(config.image_size, config.image_mean, config.image_std)
 
 
 if args.state_dict is not None:
@@ -85,15 +90,16 @@ model.to(device)
 
 if (args.dataset == 'datamatrix'):
   train_ds = DataMatrixDataset(transforms = train_tfms, target_transform = target_transform)
+  val_ds = DataMatrixDataset(mode = 'val')
 
 if args.distributed:
     kwargs = dict(num_replicas=world_size, rank=local_rank)
     train_sampler = DistributedSampler(train_ds, **kwargs)
     kwargs['shuffle'] = False
-    # val_sampler = DistributedSampler(val_dataset, **kwargs)
+    val_sampler = DistributedSampler(val_ds, **kwargs)
 else:
     train_sampler = None
-    # val_sampler = None
+    val_sampler = None
 
 train_loader = DataLoader(
     train_ds,
@@ -102,6 +108,10 @@ train_loader = DataLoader(
     drop_last=True,
     num_workers=args.workers,
 )
+
+
+
+coco_api_val_dataset = convert_to_coco_api(val_ds)
 
 optimizer = torch.optim.AdamW(params,
                               lr=args.learning_rate,
@@ -122,10 +132,17 @@ if args.distributed:
     model = convert_syncbn_model(model)
     model = DistributedDataParallel(model)
 
+evaluator = create_detection_evaluator(args.model,
+                                       model, 
+                                       device, 
+                                       coco_api_val_dataset)
+
 trainer = create_detection_trainer(args.model, 
                                    model, 
                                    optimizer, 
                                    device,
+                                   val_ds,
+                                   evaluator,
                                    loss_fn = loss_fn,
                                    logging = local_rank == 0
                                    )
@@ -136,7 +153,8 @@ trainer.add_event_handler(
 
 if local_rank == 0:
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = 'checkpoints/' + args.feature_extractor + args.model +  '/{}'.format(dirname)
+    dirname = "checkpoints/" + args.feature_extractor + args.model + "/{}".format(dirname)
+    
     checkpointer = ModelCheckpoint(
         dirname=dirname,
         filename_prefix=args.model,

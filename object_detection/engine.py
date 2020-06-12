@@ -5,9 +5,11 @@ from ignite.engine import (Engine,
                            _prepare_batch, 
                            create_supervised_evaluator)
 from ignite.metrics import RunningAverage, Loss
-from object_detection.utils.prepare_data import transform_inputs
 from ignite.contrib.handlers import ProgressBar
+from object_detection.utils.prepare_data import transform_inputs
 from object_detection.utils.evaluation import CocoEvaluator
+from object_detection.models.ssd.predictor import Predictor
+
 
 
 __all__ = [
@@ -69,35 +71,66 @@ def create_detection_trainer(model_name,
             if h in param_groups.keys():
                 engine.state.metrics[h] = param_groups[h]
     
-    @trainer.on(Events.EPOCH_COMPLETED)
+    @trainer.on(Events.EPOCH_COMPLETED(every=2))
     def on_epoch_completed(engine):
         evaluator.run(val_loader)
 
     if logging:
-        ProgressBar(persist=True) \
+        ProgressBar(persist=False) \
             .attach(trainer, ['loss', 'lr'])
 
     return trainer
 
 
-
-def create_detection_evaluator(model, device, coco_api_val_dataset):
-    def update_model(engine, batch):
+def test_data(model_name, model, batch, device):
+    if model_name == "faster":
         images, targets = batch
         images, targets = transform_inputs(images, targets, device)
         images_model = copy.deepcopy(images)
-
+        
         torch.cuda.synchronize()
         with torch.no_grad():
             outputs = model(images_model)
-
+        
         outputs = [{k: v.to(device) for k, v in t.items()} for t in outputs]
-
         res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
-        engine.state.coco_evaluator.update(res)
-
         images_model = outputs = None
+    
+    
+    elif model_name == "ssd512":
+        from object_detection.utils.ssd import ssd512_config as config
+        images, targets = batch    
+        images_model = copy.deepcopy(images)
+        candidate_size = 50 
+        sigma = 0.5 
+        predictor = Predictor(model,
+                              config.image_size, 
+                              config.image_mean,
+                              config.image_std,
+                              iou_threshold = config.iou_threshold,
+                              candidate_size = candidate_size,
+                              sigma = sigma,
+                              device = device)
+        boxes, labels, probs = predictor.predict(images_model, 10 , 0.2)
+        if boxes.size()[0] == 0:
+            outputs = {"boxes": torch.tensor([[0,0,0,0]]),
+                       "labels": torch.tensor([0]),
+                       "scores" : torch.tensor([0])}
+        else:
+            outputs = {"boxes": boxes,
+                       "labels" : labels,
+                       "scores": probs}
+            
+        res = {targets['image_id'].item(): outputs}
+    images_model = outputs = None
+    return images, targets, res 
+        
+    
 
+def create_detection_evaluator(model_name, model, device, coco_api_val_dataset):
+    def update_model(engine, batch):
+        images, targets, res = test_data(model_name, model, batch, device)
+        engine.state.coco_evaluator.update(res)
         return images, targets, res
     
     evaluator = Engine(update_model)
@@ -123,8 +156,5 @@ def create_detection_evaluator(model, device, coco_api_val_dataset):
 
 
 
-    
-
-                
 
 

@@ -158,7 +158,7 @@ framerate: 58 fps
 
 To train:
 ````
-python scripts/train_ssd.py --model ssd512 --batch_size 16 --learning_rate 1e-3 --weight_decay 4e-5 --epochs 300
+python scripts/train_ssd.py --model ssd512 --batch_size 16 --learning_rate 1e-3 --weight_decay 4e-5 --epochs 300 --feature_extractor mobilenetv2
 ````
 
 To evaluate:

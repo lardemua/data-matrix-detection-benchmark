@@ -107,7 +107,12 @@ if args.distributed:
     model = DistributedDataParallel(model)
 
 
-evaluator = create_detection_evaluator(model, device, coco_api_val_dataset)
+evaluator = create_detection_evaluator(args.model,
+                                       model, 
+                                       device, 
+                                       coco_api_val_dataset
+                                       )
+
 trainer = create_detection_trainer(args.model, 
                                    model, 
                                    optimizer, 
