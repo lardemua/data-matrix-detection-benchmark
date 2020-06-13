@@ -35,6 +35,16 @@ def train_data(model_name, model, batch, loss_fn, device):
 
         regression_loss, classification_loss = loss_fn(confidence, locations, labels, boxes)
         loss = regression_loss + classification_loss
+    
+    elif model_name == "yolov3":
+        images, targets, paths, _ = batch
+        images = images.to(device).float() / 255.0
+        targets = targets.to(device)
+        
+        predictions = model(images)
+        
+        loss, loss_items = loss_fn(predictions, targets, model)
+        loss *= len(batch) / 64 
     return loss
         
 

@@ -18,7 +18,7 @@ from object_detection.models.faster.faster_rcnn import (resnet50fpn_fasterRCNN,
                                                         mobilenetv2_fasterRCNN)
 from object_detection.utils.prepare_data import (get_tfms_faster,
                                                  collate_fn, 
-                                          transform_inputs)
+                                                 transform_inputs)
 from object_detection.utils.tools import (get_arguments, get_scheduler)
 from object_detection.engine import (create_detection_trainer, create_detection_evaluator)
 from object_detection.utils.evaluation import convert_to_coco_api

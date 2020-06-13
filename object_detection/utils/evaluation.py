@@ -232,7 +232,7 @@ def convert_to_coco_api(ds):
     dataset = {'images': [], 'categories': [], 'annotations': []}
     categories = set()
     for img_idx in range(len(ds)):
-        img, targets = ds[img_idx]
+        img, targets = ds[img_idx][0], ds[img_idx][1] 
         image_id = targets["image_id"].item()
         img_dict = {}
         img_dict['id'] = image_id

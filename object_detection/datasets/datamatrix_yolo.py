@@ -78,6 +78,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
         lbl = lbl_file_row["Label"][idx]
         num_objs = len(lbl['DataMatrix'])
         labels_ori = []
+        orig_bboxes = []
         for n_bbox in range(num_objs):
             pts = lbl['DataMatrix'][n_bbox]
             xmin = w0
@@ -94,6 +95,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
                     ymax = pts['geometry'][i]['y']
                 if (pts['geometry'][i]['y']<ymin):
                     ymin = pts['geometry'][i]['y']
+            orig_bboxes.append([xmin,ymin,xmax,ymax])
             normalized_bbox = albu.augmentations.bbox_utils.normalize_bbox((xmin,ymin,
                                                                             xmax,ymax), 
                                                                             h0, w0)
@@ -102,9 +104,23 @@ class DataMatrixDataset(Dataset):  # for training/testing
             cx = normalized_bbox[0] + bbox_w / 2
             cy = normalized_bbox[1] + bbox_h / 2
             labels_ori.append([0, cx, cy, bbox_w, bbox_h])
-        labels_ori = np.array(labels_ori, dtype = np.float32)
-
         
+        if self.mode == "val":
+            boxes = torch.as_tensor(orig_bboxes, dtype = torch.float32)
+            labels = torch.zeros((num_objs), dtype = torch.int64)
+            image_id = torch.tensor(idx)
+            area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+            iscrowd = torch.zeros(boxes.shape[0], dtype=torch.int64)
+            target = {}
+            target['boxes'] = boxes
+            target['labels'] = labels
+            target['image_id'] = image_id
+            target['area'] = area
+            target['iscrowd'] = iscrowd
+            return img, target
+            
+        
+        labels_ori = np.array(labels_ori, dtype = np.float32)
         # Load labels
         labels = []
         labels = labels_ori.copy()
@@ -261,14 +277,14 @@ def load_mosaic(self, index):
     return img4, labels4
 
 
-def letterbox(img, new_shape=(416, 416), color=(128, 128, 128),
-              auto=True, scaleFill=False, scaleup=True, interp=cv2.INTER_AREA):
+def letterbox(img, new_shape=(416, 416), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True):
     # Resize image to a 32-pixel-multiple rectangle https://github.com/ultralytics/yolov3/issues/232
     shape = img.shape[:2]  # current shape [height, width]
     if isinstance(new_shape, int):
         new_shape = (new_shape, new_shape)
+
     # Scale ratio (new / old)
-    r = max(new_shape) / max(shape)
+    r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
     if not scaleup:  # only scale down, do not scale up (for better test mAP)
         r = min(r, 1.0)
 
@@ -277,7 +293,7 @@ def letterbox(img, new_shape=(416, 416), color=(128, 128, 128),
     new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
     dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[1]  # wh padding
     if auto:  # minimum rectangle
-        dw, dh = np.mod(dw, 32), np.mod(dh, 32)  # wh padding
+        dw, dh = np.mod(dw, 64), np.mod(dh, 64)  # wh padding
     elif scaleFill:  # stretch
         dw, dh = 0.0, 0.0
         new_unpad = new_shape
@@ -287,7 +303,7 @@ def letterbox(img, new_shape=(416, 416), color=(128, 128, 128),
     dh /= 2
 
     if shape[::-1] != new_unpad:  # resize
-        img = cv2.resize(img, new_unpad, interpolation=interp)  # INTER_AREA is better, INTER_LINEAR is faster
+        img = cv2.resize(img, new_unpad, interpolation=cv2.INTER_LINEAR)
     top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
     left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
     img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # add border
