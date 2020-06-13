@@ -17,6 +17,7 @@ from ignite.handlers import (global_step_from_engine, ModelCheckpoint)
 #object_detection modules
 from object_detection.utils.tools import (get_arguments, get_scheduler)
 from object_detection.models.yolov3.yolov3_darknet import Darknet
+from object_detection.datasets.datamatrix_yolo import DataMatrixDataset 
 
 
 
@@ -65,23 +66,38 @@ if args.state_dict is not None:
     
 model.to(device)
 
-# Dataset
-train_ds = LoadImagesAndLabels(train_path, 
-                              img_size, 
-                              args.batch_size,
-                              augment = True,
-                              hyp = hyp,  # augmentation hyperparameters
-                              rect = args.rect)
+# trainin set 
+train_ds = DataMatrixDataset(mode = "train", 
+                             img_size = 608, 
+                             batch_size = args.batch_size,
+                             augment = True,
+                             hyp = hyp,  # augmentation hyperparameters
+                             rect = args.imgs_rect)
 
-# Dataloader
-train_loader = torch.utils.data.DataLoader(dataset,
-                                           batch_size=args.batch_size,
-                                           num_workers=args.num_workers,
-                                           shuffle=not args.rect,  # Shuffle=True unless rectangular training is used
-                                           pin_memory=True,
-                                           collate_fn=dataset.collate_fn)
+# training set dataloader
+train_loader = DataLoader(train_ds,
+                          batch_size=args.batch_size,
+                          num_workers=args.workers,
+                          shuffle=True,  # Shuffle=True unless rectangular training is used
+                          pin_memory=True,
+                          collate_fn=train_ds.collate_fn)
 
-# Testloader
+# validation set
+val_ds = DataMatrixDataset(mode = "val",
+                           img_size = 608,
+                           batch_size = args.batch_size,
+                           hyp = hyp,
+                           rect = True)
+
+val_loader = DataLoader(val_ds,
+                        batch_size = args.batch_size,
+                        num_workers = args.workers,
+                        pin_memory = True,
+                        collate_fn = train_ds.collate_fn)
+
+
+
+# validation set dataloader
 
 
 #Optimizer    

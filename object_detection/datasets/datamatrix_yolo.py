@@ -5,6 +5,11 @@ import pandas as pd
 import cv2
 import albumentations as albu
 from torch.utils.data import Dataset
+from PIL import Image
+import random
+import math
+
+
 
 PATH = "/home/tmr/data-matrix-dataset-loading/dataset_resized_4/"
 PATH_IMAGES = os.path.join(PATH, "images")
@@ -14,22 +19,12 @@ PATH_LABELS = os.path.join(PATH, "labels")
 class DataMatrixDataset(Dataset):  # for training/testing
     def __init__(self, 
                  mode = "train", 
-                 img_size=416, 
+                 img_size=608, 
                  batch_size=16, 
                  augment=False, 
                  hyp=None, 
-                 rect=False, 
-                 cache_labels=True, 
-                 cache_images=False, 
-                 single_cls=False):
+                 rect=True):        
         self.mode = mode
-        self.img_size = img_size
-        self.augment = augment
-        self.hyp = hyp
-        self.rect = rect
-        
-        
-    
         if self.mode == "train" or self.mode == "val":
                 self.imgs = os.listdir(os.path.join(PATH_IMAGES, self.mode))
                 self.lbls = os.path.join(PATH_LABELS, "data_matrix_" + self.mode + ".json")
@@ -43,8 +38,15 @@ class DataMatrixDataset(Dataset):  # for training/testing
         bi = np.floor(np.arange(n) / batch_size).astype(np.int)  # batch index
         nb = bi[-1] + 1  # number of batches
         
+        self.batch = bi
+        self.img_size = img_size
+        self.augment = augment
+        self.hyp = hyp
+        self.rect = rect
+        self.mosaic = self.augment and not self.rect  # load 4 images at a time into a mosaic (only during training)
+        
         if self.rect:
-            s = [[2000, 1500]]
+            s = [(Image.open(os.path.join(PATH_IMAGES, self.mode,f))).size for f in self.imgs]
             s = np.array(s, dtype=np.float64)
             ar = s[:, 1] / s[:, 0]  # aspect ratio
             i = ar.argsort()
@@ -66,7 +68,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
         
         filename = self.labels_file["External ID"][idx]
         img, (h0, w0), (h, w) = load_image(self, os.path.join(PATH_IMAGES, self.mode, filename))
-        shape = self.batch_shapes[self.batch[index]] if self.rect else self.img_size
+        shape = self.batch_shapes[self.batch[idx]] if self.rect else self.img_size
         img, ratio, pad = letterbox(img, shape, auto=False, scaleup=self.augment)
         shapes = (h0, w0), ((h / h0, w / w0), pad)
         
@@ -75,14 +77,14 @@ class DataMatrixDataset(Dataset):  # for training/testing
         lbl_file_row = self.labels_file[self.labels_file.index == idx ]
         lbl = lbl_file_row["Label"][idx]
         num_objs = len(lbl['DataMatrix'])
-        labels = []
+        labels_ori = []
         for n_bbox in range(num_objs):
             pts = lbl['DataMatrix'][n_bbox]
             xmin = w0
             ymin= h0
             xmax = 0
             ymax = 0
-            labels_ori = []
+            
             for i in range(4):
                 if (pts['geometry'][i]['x']>xmax):
                     xmax = pts['geometry'][i]['x']
@@ -92,26 +94,25 @@ class DataMatrixDataset(Dataset):  # for training/testing
                     ymax = pts['geometry'][i]['y']
                 if (pts['geometry'][i]['y']<ymin):
                     ymin = pts['geometry'][i]['y']
-                normalized_bbox = albu.augmentations.bbox_utils.normalize_bbox((xmin,ymin,
-                                                                                xmax,ymax), 
-                                                                                h0, w0)
-                bbox_w =  normalized_bbox[2] - normalized_bbox[0]
-                bbox_h = normalized_bbox[3] - normalized_bbox[1]
-                cx = normalized_bbox[0] + bbox_w / 2
-                cy = normalized_bbox[1] + bbox_h / 2
-                labels_ori.append([1, cx, cy, bbox_w, bbox_h])
-            labels_ori = np.array(labels_ori, dtype = np.float32)    
+            normalized_bbox = albu.augmentations.bbox_utils.normalize_bbox((xmin,ymin,
+                                                                            xmax,ymax), 
+                                                                            h0, w0)
+            bbox_w =  normalized_bbox[2] - normalized_bbox[0]
+            bbox_h = normalized_bbox[3] - normalized_bbox[1]
+            cx = normalized_bbox[0] + bbox_w / 2
+            cy = normalized_bbox[1] + bbox_h / 2
+            labels_ori.append([0, cx, cy, bbox_w, bbox_h])
+        labels_ori = np.array(labels_ori, dtype = np.float32)
+
         
         # Load labels
         labels = []
         labels = labels_ori.copy()
+        # Labels in pixels 
         labels[:, 1] = ratio[0] * w * (labels_ori[:, 1] - labels_ori[:, 3] / 2) + pad[0]  # pad width
         labels[:, 2] = ratio[1] * h * (labels_ori[:, 2] - labels_ori[:, 4] / 2) + pad[1]  # pad height
         labels[:, 3] = ratio[0] * w * (labels_ori[:, 1] + labels_ori[:, 3] / 2) + pad[0]
         labels[:, 4] = ratio[1] * h * (labels_ori[:, 2] + labels_ori[:, 4] / 2) + pad[1]
-        
-
-        
             
         if self.augment:
             # Augment imagespace
@@ -133,6 +134,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
             # Normalize coordinates 0 - 1
             labels[:, [2, 4]] /= img.shape[0]  # height
             labels[:, [1, 3]] /= img.shape[1]  # width
+    
             
         if self.augment:
             # random left-right flip
@@ -151,6 +153,8 @@ class DataMatrixDataset(Dataset):  # for training/testing
         labels_out = torch.zeros((nL, 6))
         if nL:
             labels_out[:, 1:] = torch.from_numpy(labels)
+        
+        img = img[:, :, ::-1]  # BGR to RGB, to 3x416x416
         img = np.ascontiguousarray(img)
         return torch.from_numpy(img), labels_out, os.path.join(PATH_IMAGES, self.mode, filename), shapes
 
@@ -263,7 +267,6 @@ def letterbox(img, new_shape=(416, 416), color=(128, 128, 128),
     shape = img.shape[:2]  # current shape [height, width]
     if isinstance(new_shape, int):
         new_shape = (new_shape, new_shape)
-
     # Scale ratio (new / old)
     r = max(new_shape) / max(shape)
     if not scaleup:  # only scale down, do not scale up (for better test mAP)
@@ -419,11 +422,5 @@ def xyxy2xywh(x):
     return y
 
 
-def xywh2xyxy(x):
-    # Transform box coordinates from [x, y, w, h] to [x1, y1, x2, y2] (where xy1=top-left, xy2=bottom-right)
-    y = torch.zeros_like(x) if isinstance(x, torch.Tensor) else np.zeros_like(x)
-    y[:, 0] = x[:, 0] - x[:, 2] / 2  # top left x
-    y[:, 1] = x[:, 1] - x[:, 3] / 2  # top left y
-    y[:, 2] = x[:, 0] + x[:, 2] / 2  # bottom right x
-    y[:, 3] = x[:, 1] + x[:, 3] / 2  # bottom right y
-    return y
+
+

@@ -119,6 +119,13 @@ def get_arguments():
         type=str,
         required=False
     )
+    parser.add_argument(
+    '--imgs_rect',
+    '-rect',
+    default=True,
+    type=bool,
+    required=False
+    )
 
     
     
