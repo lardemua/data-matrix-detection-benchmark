@@ -51,7 +51,6 @@ def transform_inputs(images, targets, device):
   - targets from batch
   - GPU device (e.g. "cuda:2")     
   """
-  
   images = list(image.to(device) for image in images)
   targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
   return images, targets

@@ -144,7 +144,7 @@ trainer = create_detection_trainer(args.model,
                                    model, 
                                    optimizer, 
                                    device,
-                                   val_ds,
+                                   val_loader,
                                    evaluator,
                                    loss_fn = loss_fn,
                                    logging = local_rank == 0
@@ -156,7 +156,7 @@ trainer.add_event_handler(
 
 if local_rank == 0:
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = "checkpoints/" + args.feature_extractor + args.model + "/{}".format(dirname)
+    dirname = "checkpoints/" +  args.model + "/{}".format(dirname)
     
     checkpointer = ModelCheckpoint(
         dirname=dirname,

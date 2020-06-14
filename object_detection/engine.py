@@ -139,38 +139,46 @@ def test_data(model_name, model, batch, device):
         images, targets = batch
         images, targets = transform_inputs(images, targets, device)
         images_model = copy.deepcopy(images)
-        images_model.float() / 255.0
-        nb, _, height, width = images_model.shape
+        images_model = [image.float()/255 for image in images_model]
+        batch_imgs = torch.stack(images_model)
+
+        boxes = []
+        labels = []
+        scores = []
+        res = {}
+        nb, _, width, height = batch_imgs.shape
         whwh = torch.Tensor([width, height, width, height]).to(device)
         
         torch.cuda.synchronize()
         with torch.no_grad():
-            inf_out, train_out = model(images_model)
-        output = non_max_suppresion(inf_out, conf_thresh=0.5, iou_thresh = 0.5)
-        for si, pred in output:
-            labels = targets["boxes"][tagets["boxes"][:, 0] == si, 1:]
+            inf_out, train_out = model(batch_imgs)
+        output = non_max_suppression(inf_out, conf_thres=0.5, iou_thres = 0.5)
+        for si, pred in enumerate(output):
+            print("PRED:", pred)
+            labels = targets[si]["boxes"]
             nl = len(labels)
             tcls = labels[:, 0].tolist() if nl else []
             
             if pred is None:
                 outputs = {"boxes": torch.tensor([[0,0,0,0]]),
-                           "labels": torch.tensor([0]),
+                           "labels": torch.tensor([1]),
                            "scores" : torch.tensor([0])}
             else:
-                clip_coords(pred, (heigh, width))
+                clip_coords(pred, (height, width))
                 box = pred[:, :4].clone()  # xyxy
-                scale_coords(images_model[si].shape[1:], box, shapes[si][0], shapes[si][1])  # to original shape
+                scale_coords(batch_imgs[si].shape[1:], box, shapes[si][0], shapes[si][1])  # to original shape
                 box = xyxy2xywh(box)  # xywh
                 box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
                 for p, b in zip(pred.tolist(), box.tolist()):
                     boxes.append([round(x, 3) for x in b])
                     labels.append([p[5]])
                     scores.append(round(p[4], 5))
-                    
-                outputs = {"boxes": torch.tensor(boxes),
-                           "labels": torch.tensor(labels),
-                           "scores": torch.tensor(scores)}
-            
+                            
+                outputs = {"boxes": boxes,
+                           "labels": labels,
+                           "scores": scores}
+            res.update({targets[si]["image_id"].item(): outputs})
+                
     images_model = outputs = None
     return images, targets, res 
         
