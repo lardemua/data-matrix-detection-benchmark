@@ -152,7 +152,7 @@ def test_data(model_name, model, batch, device):
         torch.cuda.synchronize()
         with torch.no_grad():
             inf_out, train_out = model(batch_imgs)
-        output = non_max_suppression(inf_out, conf_thres=0.5, iou_thres = 0.5)
+        output = non_max_suppression(inf_out, conf_thres=0.3, iou_thres = 0.6)
         for si, pred in enumerate(output):
             labels = targets[si]["boxes"]
             nl = len(labels)
@@ -163,6 +163,7 @@ def test_data(model_name, model, batch, device):
                            "labels": torch.tensor([1]),
                            "scores" : torch.tensor([0])}
             else:
+                print("ENTRRRRRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEEEEEEEEI")
                 clip_coords(pred, (height, width))
                 box = pred[:, :4].clone()  # xyxy
                 scale_coords(batch_imgs[si].shape[1:], box, shapes[si][0], shapes[si][1])  # to original shape
