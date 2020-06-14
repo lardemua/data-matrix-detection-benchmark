@@ -154,7 +154,6 @@ def test_data(model_name, model, batch, device):
             inf_out, train_out = model(batch_imgs)
         output = non_max_suppression(inf_out, conf_thres=0.5, iou_thres = 0.5)
         for si, pred in enumerate(output):
-            print("PRED:", pred)
             labels = targets[si]["boxes"]
             nl = len(labels)
             tcls = labels[:, 0].tolist() if nl else []
