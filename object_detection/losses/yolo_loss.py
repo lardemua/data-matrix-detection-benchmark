@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
+from object_detection.utils.yolo.yolo_utils import smooth_BCE, wh_iou, bbox_iou
 
 class FocalLoss(nn.Module):
     # Wraps focal loss around existing loss_fcn(), i.e. criteria = FocalLoss(nn.BCEWithLogitsLoss(), gamma=1.5)
@@ -151,6 +152,3 @@ def build_targets(model, targets):
 
     return tcls, tbox, indices, av
 
-def smooth_BCE(eps=0.1):  # https://github.com/ultralytics/yolov3/issues/238#issuecomment-598028441
-    # return positive, negative label smoothing BCE targets
-    return 1.0 - 0.5 * eps, 0.5 * eps

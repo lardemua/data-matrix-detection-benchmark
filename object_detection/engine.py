@@ -9,6 +9,8 @@ from ignite.contrib.handlers import ProgressBar
 from object_detection.utils.prepare_data import transform_inputs
 from object_detection.utils.evaluation import CocoEvaluator
 from object_detection.models.ssd.predictor import Predictor
+from object_detection.datasets.datamatrix_yolo import xyxy2xywh
+from object_detection.utils.yolo.yolo_utils import *
 
 
 
@@ -132,6 +134,43 @@ def test_data(model_name, model, batch, device):
                        "scores": probs}
             
         res = {targets['image_id'].item(): outputs}
+        
+    elif model_name == "yolov3":
+        images, targets = batch
+        images, targets = transform_inputs(images, targets, device)
+        images_model = copy.deepcopy(images)
+        images_model.float() / 255.0
+        nb, _, height, width = images_model.shape
+        whwh = torch.Tensor([width, height, width, height]).to(device)
+        
+        torch.cuda.synchronize()
+        with torch.no_grad():
+            inf_out, train_out = model(images_model)
+        output = non_max_suppresion(inf_out, conf_thresh=0.5, iou_thresh = 0.5)
+        for si, pred in output:
+            labels = targets["boxes"][tagets["boxes"][:, 0] == si, 1:]
+            nl = len(labels)
+            tcls = labels[:, 0].tolist() if nl else []
+            
+            if pred is None:
+                outputs = {"boxes": torch.tensor([[0,0,0,0]]),
+                           "labels": torch.tensor([0]),
+                           "scores" : torch.tensor([0])}
+            else:
+                clip_coords(pred, (heigh, width))
+                box = pred[:, :4].clone()  # xyxy
+                scale_coords(images_model[si].shape[1:], box, shapes[si][0], shapes[si][1])  # to original shape
+                box = xyxy2xywh(box)  # xywh
+                box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
+                for p, b in zip(pred.tolist(), box.tolist()):
+                    boxes.append([round(x, 3) for x in b])
+                    labels.append([p[5]])
+                    scores.append(round(p[4], 5))
+                    
+                outputs = {"boxes": torch.tensor(boxes),
+                           "labels": torch.tensor(labels),
+                           "scores": torch.tensor(scores)}
+            
     images_model = outputs = None
     return images, targets, res 
         

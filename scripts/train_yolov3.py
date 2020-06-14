@@ -131,18 +131,44 @@ del pg0, pg1, pg2
 #Scheduler 
 scheduler = get_scheduler(optimizer,args.epochs, args.learning_rate, len(train_loader))
 
+if args.distributed:
+    model = convert_syncbn_model(model)
+    model = DistributedDataParallel(model)
 
-# evaluator = create_detection_evaluator(args.model,
-#                                        model, 
-#                                        device, 
-#                                        coco_api_val_dataset)
+evaluator = create_detection_evaluator(args.model,
+                                       model, 
+                                       device, 
+                                       coco_api_val_dataset)
 
-# trainer = create_detection_trainer(args.model, 
-#                                    model, 
-#                                    optimizer, 
-#                                    device,
-#                                    val_ds,
-#                                    evaluator,
-#                                    loss_fn = loss_fn,
-#                                    logging = local_rank == 0
-#                                    )
+trainer = create_detection_trainer(args.model, 
+                                   model, 
+                                   optimizer, 
+                                   device,
+                                   val_ds,
+                                   evaluator,
+                                   loss_fn = loss_fn,
+                                   logging = local_rank == 0
+                                   )
+
+trainer.add_event_handler(
+    Events.ITERATION_COMPLETED, scheduler,
+)
+
+if local_rank == 0:
+    dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
+    dirname = "checkpoints/" + args.feature_extractor + args.model + "/{}".format(dirname)
+    
+    checkpointer = ModelCheckpoint(
+        dirname=dirname,
+        filename_prefix=args.model,
+        n_saved=5,
+        global_step_transform=global_step_from_engine(trainer),
+    )
+    trainer.add_event_handler(
+        Events.EPOCH_COMPLETED, checkpointer,
+        to_save={'model': model if not args.distributed else model.module},
+    )
+
+trainer.run(train_loader, max_epochs=args.epochs)
+
+

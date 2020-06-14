@@ -170,7 +170,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
         if nL:
             labels_out[:, 1:] = torch.from_numpy(labels)
         
-        img = img[:, :, ::-1]  # BGR to RGB, to 3x416x416
+        img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
         img = np.ascontiguousarray(img)
         return torch.from_numpy(img), labels_out, os.path.join(PATH_IMAGES, self.mode, filename), shapes
 
