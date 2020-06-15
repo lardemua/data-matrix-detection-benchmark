@@ -190,7 +190,7 @@ framerate: 71fps
 
 To train:
 ````
-python scripts/train_yolov3.py --model yolov3 --batch_size 8 --weight_decay 4e-5 --epochs 300
+python scripts/train_yolov3.py --model yolov3 --batch_size 4 --epochs 300
 ````
 
 To evaluate:

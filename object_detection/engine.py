@@ -168,14 +168,14 @@ def test_data(model_name, model, batch, device):
                 box = scale_coords(batch_imgs[si].shape[1:], box, shapes[0], shapes[1])  # to original shape
                 box = xyxy2xywh(box)  # xywh
                 box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
-                for p, b in zip(pred.tolist(), box.tolist()):
-                    boxes.append([round(x, 3) for x in b])
+                box = xywh2xyxy(box)
+                for p in pred.tolist():
                     labels_.append([p[5]])
                     scores.append(round(p[4], 5))
                             
-                outputs = {"boxes": boxes,
-                           "labels": labels,
-                           "scores": scores}
+                outputs = {"boxes": box,
+                           "labels": torch.tensor(labels_),
+                           "scores": torch.tensor(scores)}
             res.update({targets[si]["image_id"].item(): outputs})
                 
     images_model = outputs = None
