@@ -52,5 +52,15 @@ def transform_inputs(images, targets, device):
   - GPU device (e.g. "cuda:2")     
   """
   images = list(image.to(device) for image in images)
-  targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
-  return images, targets
+  #targets = [{k: v.to(device)  for k, v in t.items()} for t in targets]
+  dev_targets = []
+  target_dict = {}
+  for t in targets:
+    for k, v in t.items():
+      if isinstance(v, list):
+        target_dict.update({k:v})
+      else:
+        target_dict.update({k:v.to(device)})
+    dev_targets.append(target_dict)
+    
+  return images, dev_targets

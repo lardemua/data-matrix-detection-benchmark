@@ -25,16 +25,16 @@ from object_detection.utils.prepare_data import collate_fn
 
 # Hyperparameters (results68: 59.9 mAP@0.5 yolov3-spp-416) https://github.com/ultralytics/yolov3/issues/310
 
-hyp = {'giou': 1.0,  # giou loss gain
+hyp = {'giou': 3.54, #1.0,  # giou loss gain
        'cls': 37.4,  # cls loss gain
        'cls_pw': 1.0,  # cls BCELoss positive_weight
-       'obj': 64.3,  # obj loss gain (*=img_size/320 if img_size != 320)
+       'obj': 205.76,  #64.3,  # obj loss gain (*=img_size/320 if img_size != 320)
        'obj_pw': 1.0,  # obj BCELoss positive_weight
-       'iou_t': 0.225,  # iou training threshold
-       'lr0': 0.001,  # initial learning rate (SGD=5E-3, Adam=5E-4)
-       'lrf': -4.,  # final LambdaLR learning rate = lr0 * (10 ** lrf)
+       'iou_t': 0.20, #0.225,  # iou training threshold
+       'lr0': 0.01, #0.001 # initial learning rate (SGD=5E-3, Adam=5E-4)
+       'lrf': 0.0005,#-4.,  # final LambdaLR learning rate = lr0 * (10 ** lrf)
        'momentum': 0.937,  # SGD momentum
-       'weight_decay': 0.000484,  # optimizer weight decay
+       'weight_decay': 0.0005,  # optimizer weight decay
        'fl_gamma': 0.0,  # focal loss gamma (efficientDet default is gamma=1.5)
        'hsv_h': 0.0138,  # image HSV-Hue augmentation (fraction)
        'hsv_s': 0.678,  # image HSV-Saturation augmentation (fraction)
@@ -63,15 +63,15 @@ if (args.model == "yolov3"):
     model = Darknet(args.yolo_config)
 
 if args.state_dict is not None:
-    state_dict = torch.load(args.state_dict, map_location='cpu')
-    model.load_state_dict(state_dict, strict=True)
+    chkpt = torch.load(args.state_dict, map_location="cpu")
+    model.load_state_dict(chkpt, strict=False)
     
 model.to(device)
 
 if (args.dataset == 'datamatrix'):
     # training set 
     train_ds = DataMatrixDataset(mode = "train", 
-                                img_size = 608, 
+                                img_size = 1024, 
                                 batch_size = args.batch_size,
                                 augment = True,
                                 hyp = hyp,  # augmentation hyperparameters
@@ -80,7 +80,7 @@ if (args.dataset == 'datamatrix'):
 
     # validation set
     val_ds = DataMatrixDataset(mode = "val",
-                            img_size = 608,
+                            img_size = 1024,
                             batch_size = args.batch_size,
                             hyp = hyp,
                             rect = True)

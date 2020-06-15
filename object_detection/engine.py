@@ -106,7 +106,6 @@ def test_data(model_name, model, batch, device):
         
         outputs = [{k: v.to(device) for k, v in t.items()} for t in outputs]
         res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
-        images_model = outputs = None
     
     
     elif model_name == "ssd512":
@@ -143,7 +142,7 @@ def test_data(model_name, model, batch, device):
         batch_imgs = torch.stack(images_model)
 
         boxes = []
-        labels = []
+        labels_ = []
         scores = []
         res = {}
         nb, _, width, height = batch_imgs.shape
@@ -152,9 +151,10 @@ def test_data(model_name, model, batch, device):
         torch.cuda.synchronize()
         with torch.no_grad():
             inf_out, train_out = model(batch_imgs)
-        output = non_max_suppression(inf_out, conf_thres=0.3, iou_thres = 0.6)
+        output = non_max_suppression(inf_out, conf_thres=0.25, iou_thres = 0.6)
         for si, pred in enumerate(output):
             labels = targets[si]["boxes"]
+            shapes = targets[si]["shapes"]
             nl = len(labels)
             tcls = labels[:, 0].tolist() if nl else []
             
@@ -163,15 +163,14 @@ def test_data(model_name, model, batch, device):
                            "labels": torch.tensor([1]),
                            "scores" : torch.tensor([0])}
             else:
-                print("ENTRRRRRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEEEEEEEEI")
-                clip_coords(pred, (height, width))
+                pred = clip_coords(pred, (height, width))
                 box = pred[:, :4].clone()  # xyxy
-                scale_coords(batch_imgs[si].shape[1:], box, shapes[si][0], shapes[si][1])  # to original shape
+                box = scale_coords(batch_imgs[si].shape[1:], box, shapes[0], shapes[1])  # to original shape
                 box = xyxy2xywh(box)  # xywh
                 box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
                 for p, b in zip(pred.tolist(), box.tolist()):
                     boxes.append([round(x, 3) for x in b])
-                    labels.append([p[5]])
+                    labels_.append([p[5]])
                     scores.append(round(p[4], 5))
                             
                 outputs = {"boxes": boxes,

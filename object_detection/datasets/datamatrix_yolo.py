@@ -117,6 +117,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
             target['image_id'] = image_id
             target['area'] = area
             target['iscrowd'] = iscrowd
+            target['shapes'] = shapes
             return torch.tensor(np.transpose(img, (2,1,0))), target
             
         

@@ -80,6 +80,7 @@ target/
 
 # models
 *.pth
+*.pt
 
 #videos
 *.mp4
