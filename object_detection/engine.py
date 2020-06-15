@@ -170,7 +170,7 @@ def test_data(model_name, model, batch, device):
                 box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
                 box = xywh2xyxy(box)
                 for p in pred.tolist():
-                    labels_.append([p[5]])
+                    labels_.append(p[5])
                     scores.append(round(p[4], 5))
                             
                 outputs = {"boxes": box,
