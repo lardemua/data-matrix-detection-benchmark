@@ -118,6 +118,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
             target['area'] = area
             target['iscrowd'] = iscrowd
             target['shapes'] = shapes
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             return torch.tensor(np.transpose(img, (2,1,0))), target
             
         
