@@ -115,7 +115,7 @@ def get_arguments():
     parser.add_argument(
         '--yolo_config',
         '-cfg',
-        default='object_detection/utils/yolo/yolov3.cfg',
+        default='object_detection/utils/yolo/yolov3_spp.cfg',
         type=str,
         required=False
     )
