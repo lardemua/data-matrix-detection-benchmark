@@ -140,7 +140,6 @@ def test_data(model_name, model, batch, device):
         images_model = copy.deepcopy(images)
         images_model = [image.float()/255 for image in images_model]
         batch_imgs = torch.stack(images_model)
-
         boxes = []
         labels_ = []
         scores = []
@@ -154,18 +153,15 @@ def test_data(model_name, model, batch, device):
         output = non_max_suppression(inf_out, conf_thres=0.25, iou_thres = 0.6)
         for si, pred in enumerate(output):
             labels = targets[si]["boxes"]
-            shapes = targets[si]["shapes"]
-            nl = len(labels)
-            tcls = labels[:, 0].tolist() if nl else []
-            
+            shapes = targets[si]["shapes"]          
             if pred is None:
                 outputs = {"boxes": torch.tensor([[0,0,0,0]]),
                            "labels": torch.tensor([1]),
                            "scores" : torch.tensor([0])}
             else:
-                pred = clip_coords(pred, (height, width))
+                clip_coords(pred, (height, width))
                 box = pred[:, :4].clone()  # xyxy
-                box = scale_coords(batch_imgs[si].shape[1:], box, shapes[0], shapes[1])  # to original shape
+                scale_coords((batch_imgs[si].shape[2], batch_imgs[si].shape[1]), box, shapes[0], shapes[1])  # to original shape
                 box = xyxy2xywh(box)  # xywh
                 box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
                 box = xywh2xyxy(box)

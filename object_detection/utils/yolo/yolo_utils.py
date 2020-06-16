@@ -163,7 +163,7 @@ def clip_coords(boxes, img_shape):
     # Clip bounding xyxy bounding boxes to image shape (height, width)
     boxes[:, [0, 2]].clamp_(0, img_shape[1])  # clip x
     boxes[:, [1, 3]].clamp_(0, img_shape[0])  # clip y
-    return boxes
+
 
     
 def smooth_BCE(eps=0.1):  # https://github.com/ultralytics/yolov3/issues/238#issuecomment-598028441
