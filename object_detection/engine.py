@@ -163,7 +163,6 @@ def test_data(model_name, model, batch, device):
                 box = pred[:, :4].clone()  # xyxy
                 scale_coords((batch_imgs[si].shape[2], batch_imgs[si].shape[1]), box, shapes[0], shapes[1])  # to original shape
                 box = xyxy2xywh(box)  # xywh
-                box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
                 box = xywh2xyxy(box)
                 for p in pred.tolist():
                     labels_.append(p[5])

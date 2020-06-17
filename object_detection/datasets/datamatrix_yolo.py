@@ -8,7 +8,10 @@ from torch.utils.data import Dataset
 from PIL import Image
 import random
 import math
+from pathlib import Path
 
+img_formats = ['.bmp', '.jpg', '.jpeg', '.png', '.tif', '.dng']
+vid_formats = ['.mov', '.avi', '.mp4']
 
 
 PATH = "/home/tmr/data-matrix-dataset-loading/dataset_resized_4/"
@@ -78,7 +81,6 @@ class DataMatrixDataset(Dataset):  # for training/testing
         lbl = lbl_file_row["Label"][idx]
         num_objs = len(lbl['DataMatrix'])
         labels_ori = []
-        orig_bboxes = []
         for n_bbox in range(num_objs):
             pts = lbl['DataMatrix'][n_bbox]
             xmin = w0
@@ -95,7 +97,6 @@ class DataMatrixDataset(Dataset):  # for training/testing
                     ymax = pts['geometry'][i]['y']
                 if (pts['geometry'][i]['y']<ymin):
                     ymin = pts['geometry'][i]['y']
-            orig_bboxes.append([xmin,ymin,xmax,ymax])
             normalized_bbox = albu.augmentations.bbox_utils.normalize_bbox((xmin,ymin,
                                                                             xmax,ymax), 
                                                                             h0, w0)
@@ -105,8 +106,19 @@ class DataMatrixDataset(Dataset):  # for training/testing
             cy = normalized_bbox[1] + bbox_h / 2
             labels_ori.append([0, cx, cy, bbox_w, bbox_h])
         
+    
+        labels_ori = np.array(labels_ori, dtype = np.float32)
+        # Load labels
+        labels = []
+        labels = labels_ori.copy()
+        # Labels in pixels 
+        labels[:, 1] = ratio[0] * w * (labels_ori[:, 1] - labels_ori[:, 3] / 2) + pad[0]  # pad width
+        labels[:, 2] = ratio[1] * h * (labels_ori[:, 2] - labels_ori[:, 4] / 2) + pad[1]  # pad height
+        labels[:, 3] = ratio[0] * w * (labels_ori[:, 1] + labels_ori[:, 3] / 2) + pad[0]
+        labels[:, 4] = ratio[1] * h * (labels_ori[:, 2] + labels_ori[:, 4] / 2) + pad[1]
+        
         if self.mode == "val":
-            boxes = torch.as_tensor(orig_bboxes, dtype = torch.float32)
+            boxes = torch.as_tensor(labels[:, 1:5], dtype = torch.float32)
             labels = torch.zeros((num_objs), dtype = torch.int64)
             image_id = torch.tensor(idx)
             area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
@@ -118,19 +130,9 @@ class DataMatrixDataset(Dataset):  # for training/testing
             target['area'] = area
             target['iscrowd'] = iscrowd
             target['shapes'] = shapes
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            return torch.tensor(np.transpose(img, (2,1,0))), target
-            
-        
-        labels_ori = np.array(labels_ori, dtype = np.float32)
-        # Load labels
-        labels = []
-        labels = labels_ori.copy()
-        # Labels in pixels 
-        labels[:, 1] = ratio[0] * w * (labels_ori[:, 1] - labels_ori[:, 3] / 2) + pad[0]  # pad width
-        labels[:, 2] = ratio[1] * h * (labels_ori[:, 2] - labels_ori[:, 4] / 2) + pad[1]  # pad height
-        labels[:, 3] = ratio[0] * w * (labels_ori[:, 1] + labels_ori[:, 3] / 2) + pad[0]
-        labels[:, 4] = ratio[1] * h * (labels_ori[:, 2] + labels_ori[:, 4] / 2) + pad[1]
+            img = img[:, :, ::-1].transpose(2, 0, 1)  
+            img = np.ascontiguousarray(img) 
+            return torch.from_numpy(img), target
             
         if self.augment:
             # Augment imagespace
@@ -172,7 +174,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
         if nL:
             labels_out[:, 1:] = torch.from_numpy(labels)
         
-        img = img[:, :, ::-1].transpose(2, 1, 0)  # BGR to RGB, to 3x416x416
+        img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
         img = np.ascontiguousarray(img)
         return torch.from_numpy(img), labels_out, os.path.join(PATH_IMAGES, self.mode, filename), shapes
 
@@ -442,3 +444,77 @@ def xyxy2xywh(x):
 
 
 
+class LoadImages:  # for inference
+    def __init__(self, path, img_size=416):
+        path = str(Path(path))  # os-agnostic
+        files = []
+        if os.path.isdir(path):
+            files = sorted(glob.glob(os.path.join(path, '*.*')))
+        elif os.path.isfile(path):
+            files = [path]
+
+        images = [x for x in files if os.path.splitext(x)[-1].lower() in img_formats]
+        videos = [x for x in files if os.path.splitext(x)[-1].lower() in vid_formats]
+        nI, nV = len(images), len(videos)
+
+        self.img_size = img_size
+        self.files = images + videos
+        self.nF = nI + nV  # number of files
+        self.video_flag = [False] * nI + [True] * nV
+        self.mode = 'images'
+        if any(videos):
+            self.new_video(videos[0])  # new video
+        else:
+            self.cap = None
+        assert self.nF > 0, 'No images or videos found in ' + path
+
+    def __iter__(self):
+        self.count = 0
+        return self
+
+    def __next__(self):
+        if self.count == self.nF:
+            raise StopIteration
+        path = self.files[self.count]
+
+        if self.video_flag[self.count]:
+            # Read video
+            self.mode = 'video'
+            ret_val, img0 = self.cap.read()
+            if not ret_val:
+                self.count += 1
+                self.cap.release()
+                if self.count == self.nF:  # last video
+                    raise StopIteration
+                else:
+                    path = self.files[self.count]
+                    self.new_video(path)
+                    ret_val, img0 = self.cap.read()
+
+            self.frame += 1
+            print('video %g/%g (%g/%g) %s: ' % (self.count + 1, self.nF, self.frame, self.nframes, path), end='')
+
+        else:
+            # Read image
+            self.count += 1
+            img0 = cv2.imread(path)  # BGR
+            assert img0 is not None, 'Image Not Found ' + path
+            print('image %g/%g %s: ' % (self.count, self.nF, path), end='')
+
+        # Padded resize
+        img = letterbox(img0, new_shape=self.img_size)[0]
+
+        # Convert
+        img = img[:, :, ::-1].transpose(2, 1, 0)  # BGR to RGB, to 3x416x416
+        img = np.ascontiguousarray(img)
+
+        # cv2.imwrite(path + '.letterbox.jpg', 255 * img.transpose((1, 2, 0))[:, :, ::-1])  # save letterbox image
+        return path, img, img0, self.cap
+
+    def new_video(self, path):
+        self.frame = 0
+        self.cap = cv2.VideoCapture(path)
+        self.nframes = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    def __len__(self):
+        return self.nF  # number of files
