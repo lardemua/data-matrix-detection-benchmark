@@ -140,12 +140,10 @@ def test_data(model_name, model, batch, device):
         images_model = copy.deepcopy(images)
         images_model = [image.float()/255 for image in images_model]
         batch_imgs = torch.stack(images_model)
-        boxes = []
         labels_ = []
         scores = []
         res = {}
         nb, _, width, height = batch_imgs.shape
-        whwh = torch.Tensor([width, height, width, height]).to(device)
         
         torch.cuda.synchronize()
         with torch.no_grad():
@@ -154,9 +152,10 @@ def test_data(model_name, model, batch, device):
         for si, pred in enumerate(output):
             shapes = targets[si]["shapes"]          
             if pred is None:
-                outputs = {"boxes": torch.tensor([[0,0,0,0]]),
-                           "labels": torch.tensor([1]),
-                           "scores" : torch.tensor([0])}
+                res.update({targets[si]["image_id"].item():
+                              {"boxes": torch.tensor([[0,0,0,0]]),
+                               "labels": torch.tensor([1]),
+                               "scores" : torch.tensor([0])}})
             else:
                 clip_coords(pred, (height, width))
                 box = pred[:, :4].clone()  # xyxy
@@ -165,10 +164,11 @@ def test_data(model_name, model, batch, device):
                     labels_.append(p[5])
                     scores.append(round(p[4], 5))
                             
-                outputs = {"boxes": box,
+                res.update({targets[si]["image_id"].item():
+                          {"boxes": box,
                            "labels": torch.tensor(labels_),
-                           "scores": torch.tensor(scores)}
-            res.update({targets[si]["image_id"].item(): outputs})
+                           "scores": torch.tensor(scores)}})
+
                 
     images_model = outputs = None
     return images, targets, res 
@@ -200,9 +200,5 @@ def create_detection_evaluator(model_name, model, device, coco_api_val_dataset):
         
         
     return evaluator
-
-
-
-
 
 
