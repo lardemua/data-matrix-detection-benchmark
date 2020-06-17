@@ -152,7 +152,6 @@ def test_data(model_name, model, batch, device):
             inf_out, train_out = model(batch_imgs)
         output = non_max_suppression(inf_out, conf_thres=0.25, iou_thres = 0.6)
         for si, pred in enumerate(output):
-            labels = targets[si]["boxes"]
             shapes = targets[si]["shapes"]          
             if pred is None:
                 outputs = {"boxes": torch.tensor([[0,0,0,0]]),
@@ -161,9 +160,7 @@ def test_data(model_name, model, batch, device):
             else:
                 clip_coords(pred, (height, width))
                 box = pred[:, :4].clone()  # xyxy
-                scale_coords((batch_imgs[si].shape[2], batch_imgs[si].shape[1]), box, shapes[0], shapes[1])  # to original shape
-                box = xyxy2xywh(box)  # xywh
-                box = xywh2xyxy(box)
+                scale_coords(batch_imgs[si].shape[2:], box, shapes[0], shapes[1])  # to original shape
                 for p in pred.tolist():
                     labels_.append(p[5])
                     scores.append(round(p[4], 5))
