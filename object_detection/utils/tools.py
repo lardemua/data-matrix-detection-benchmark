@@ -14,11 +14,11 @@ def get_arguments():
     parser.add_argument(
         "--dataset",
         "-d",
-        choices = ['bdd100k', 'datamatrix'],
+        choices = ['datamatrix'],
         default = 'datamatrix',
         help=("The dataset to use to train the model; "
-              "Default: bdd100k; "
-              "Possible choices: bdd100k")
+              "Default: datamatrix; "
+              "Possible choices datamatrix")
     )
 
     #Model choice
@@ -29,18 +29,18 @@ def get_arguments():
         default = 'faster',
         help = ("Model to train; "
                 "Default: faster; "
-                "Possible choices: faster-rcnn, ssd512 and yolov3")
+                "Possible choices: faster, ssd512 and yolov3")
     )
     
     #backbone choice
     parser.add_argument(
         "--feature_extractor",
         "-feat",
-        choices = ["mobilenetv2", "mobilenetv2fpn","resnet50", "resnet50fpn"],
+        choices = ["mobilenetv2", "mobilenetv2","resnet50", "resnet50fpn"],
         default = "mobilenetv2",
         help = ("Feature extractor of the model; "
                 "Default: mobilenetv2; "
-                "Possible choices: mobilenetv2, mobilenetv2fpn,resnet50, resnet50fpn for now")
+                "Possible choices: mobilenetv2,resnet50, resnet50fpn for faster and mobilenetv2 and resnet50 for ssd")
     )
 
     # Hyperparameters
