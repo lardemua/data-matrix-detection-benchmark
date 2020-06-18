@@ -38,7 +38,7 @@ def train_data(model_name, model, batch, loss_fn, device):
         regression_loss, classification_loss = loss_fn(confidence, locations, labels, boxes)
         loss = regression_loss + classification_loss
     
-    elif model_name == "yolov3":
+    elif model_name == "yolov3" or model_name == "yolov3_spp" or model_name == "yolov4":
         images, targets, paths, _ = batch
         images = images.to(device).float() / 255.0
         targets = targets.to(device)
@@ -134,7 +134,7 @@ def test_data(model_name, model, batch, device):
             
         res = {targets['image_id'].item(): outputs}
         
-    elif model_name == "yolov3":
+    elif model_name == "yolov3" or model_name == "yolov3_spp" or model_name == "yolov4":
         images, targets = batch
         images, targets = transform_inputs(images, targets, device)
         images_model = copy.deepcopy(images)
@@ -148,7 +148,7 @@ def test_data(model_name, model, batch, device):
         torch.cuda.synchronize()
         with torch.no_grad():
             inf_out, train_out = model(batch_imgs)
-        output = non_max_suppression(inf_out, conf_thres=0.25, iou_thres = 0.6)
+        output = non_max_suppression(inf_out, conf_thres=0.25, iou_thres = 0.6) #conf = 0.25 to decrease the training time
         for si, pred in enumerate(output):
             shapes = targets[si]["shapes"]          
             if pred is None:
@@ -158,16 +158,12 @@ def test_data(model_name, model, batch, device):
                                "scores" : torch.tensor([0])}})
             else:
                 clip_coords(pred, (height, width))
-                box = pred[:, :4].clone()  # xyxy
-                scale_coords(batch_imgs[si].shape[2:], box, shapes[0], shapes[1])  # to original shape
-                for p in pred.tolist():
-                    labels_.append(p[5])
-                    scores.append(round(p[4], 5))
-                            
+                box = pred[:, :4].clone() 
                 res.update({targets[si]["image_id"].item():
-                          {"boxes": box,
-                           "labels": torch.tensor(labels_),
-                           "scores": torch.tensor(scores)}})
+                           {"boxes":box,
+                            "labels":pred[:, 5],
+                            "scores":pred[:,4]
+                           }})
 
                 
     images_model = outputs = None

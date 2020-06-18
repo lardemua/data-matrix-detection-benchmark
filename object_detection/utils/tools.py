@@ -25,11 +25,11 @@ def get_arguments():
     parser.add_argument(
         "--model",
         "-m",
-        choices = ["faster", "ssd512", "yolov3"],
+        choices = ["faster", "ssd512", "yolov3", "yolov3_spp", "yolov4"],
         default = 'faster',
         help = ("Model to train; "
                 "Default: faster; "
-                "Possible choices: faster, ssd512 and yolov3")
+                "Possible choices: faster, ssd512, yolov3, yolov3_spp and yolov4")
     )
     
     #backbone choice
@@ -112,13 +112,6 @@ def get_arguments():
         required=False
     )
     
-    parser.add_argument(
-        '--yolo_config',
-        '-cfg',
-        default='object_detection/utils/yolo/yolov3_spp.cfg',
-        type=str,
-        required=False
-    )
     parser.add_argument(
     '--imgs_rect',
     '-rect',

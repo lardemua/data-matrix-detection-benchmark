@@ -59,8 +59,15 @@ torch.cuda.set_device(local_rank)
 device = torch.device('cuda')
 
 # Model
-if (args.model == "yolov3"):
-    model = Darknet(args.yolo_config)
+if (args.model == "yolov3" or args.model == "yolov3_spp" or args.model == "yolov4"):
+    if args.model == "yolov3":
+        yolo_config = "object_detection/utils/yolo/yolov3.cfg"
+    elif args.model == "yolov3_spp":
+        yolo_config = "object_detection/utils/yolo/yolov3_spp.cfg"
+    else: #yolov4
+        yolo_config = "object_detection/utils/yolo/yolov4.cfg"
+        
+    model = Darknet(yolo_config)
 
 if args.state_dict is not None:
     chkpt = torch.load(args.state_dict, map_location="cpu")

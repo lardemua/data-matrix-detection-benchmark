@@ -13,7 +13,10 @@ Benchmark for the detection of data matrix landmarks using Deep Learning archite
 - [SSD512](#ssd512)
     * [Resnet50](#resnet50)
     * [MobileNetV2](#mobilenetv2)
-- [YOLOV3](#yolov3)
+- [YOLO](#yolo)
+    * [v3 SPP](#v3-spp)
+    * [v3](#v3)
+    * [v4](#v4)  
 - [Acknowledgements](#acknowledgements)
 
 
@@ -186,40 +189,109 @@ Evaluation:
 framerate: 71fps
 
 
-# YOLOV3
+# YOLO 
+
+## v3 SPP
+
+Input size: width = 1024
 
 To train:
 ````
-python scripts/train_yolov3.py --model yolov3 --batch_size 4 --epochs 400
+python scripts/train_yolo.py --model yolov3_spp --batch_size 4 --epochs 400
 ````
 
 To evaluate:
 ````
-python scripts/eval_yolov3.py --model yolov3 --state_dict <model.pth>
+python scripts/eval_yolo.py --model yolov3_spp --batch_size 4 --state_dict <model.pth>
 ````
 
 Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.       |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.       |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.       |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.       |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.       |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.       |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.       |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.       |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.       |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.       |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.       |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.       |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.340    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.590    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.344    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.241    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.524    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.291    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.188    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.458    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.477    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.384    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.622    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.650    |
 
-  framerate: 
+  framerate: 43.5 fps
 
+## v3 
+
+Input size: width = 1024
+
+To train:
+````
+python scripts/train_yolo.py --model yolov3 --batch_size 4 --epochs 400 
+````
+
+To evaluate:
+````
+python scripts/eval_yolo.py --model yolov3 --batch_size 4 --state_dict <model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.315    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.567    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.310    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.187    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.506    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.403    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.176    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.413    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.442    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.344    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.595    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.575    |
+
+  framerate: 40 fps
+
+## v4
+
+Input size: width = 1024
+
+To train:
+````
+python scripts/train_yolo.py --model yolov4 --batch_size 2 --epochs 400 
+````
+
+To evaluate:
+````
+python scripts/eval_yolo.py --model yolov4 --batch_size 2 --state_dict <model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.196    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.358    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.191    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.058    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.411    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.487    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.129    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.281    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.312    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.179    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.517    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.725    |
+
+  framerate: 33 fps
 
 # Acknowledgements
 
-Repos: [MobileNetV2 + Single Shot Multibox Detector](https://github.com/qfgaohao/pytorch-ssd)
+Repos: [MobileNetV2 + Single Shot Multibox Detector](https://github.com/qfgaohao/pytorch-ssd) and [YOLO](https://github.com/ultralytics/yolov3)
 
 Project: This work was supported by the PRODUTECH II SIF-POCI-01-0247-FEDER-024541 Project.
