@@ -66,7 +66,7 @@ To train:
 ````
 python scripts/train_faster.py --batch_size 2 --learning_rate 1e-3 --epochs 50 --feature_extractor resnet50
 ````
-
+     
 To evaluate:
 ````
 python scripts/eval_faster.py --state_dict <PATH to model.pth> --feature_extractor resnet50
@@ -76,18 +76,18 @@ Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.475    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.750    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.518    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.115    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.403    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.620    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.241    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.549    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.554    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.286    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.479    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.694    |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.518    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.751    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.575    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.124    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.456    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.675    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.259    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.578    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.580    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.230    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.504    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.741    |
 
 framerate: 5.3fps
 
