@@ -242,18 +242,18 @@ Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.315    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.567    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.310    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.187    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.506    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.403    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.176    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.413    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.442    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.344    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.595    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.575    |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.305    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.572    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.293    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.178    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.496    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.376    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.179    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.405    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.427    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.321    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.593    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.600    |
 
   framerate: 40 fps
 
