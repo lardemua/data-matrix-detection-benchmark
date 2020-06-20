@@ -15,7 +15,6 @@ def get_tfms_faster():
             albu.augmentations.transforms.RandomSizedBBoxSafeCrop(600,600,p=0.2),
             albu.augmentations.transforms.Resize(600,800, p=0.6),
         ], p=1),
-    albu.augmentations.transforms.OpticalDistortion(),
     albu.augmentations.transforms.MultiplicativeNoise(),
     albu.augmentations.transforms.RandomContrast(limit=0.7),
     albu.HorizontalFlip(),
@@ -52,6 +51,5 @@ def transform_inputs(images, targets, device):
   - GPU device (e.g. "cuda:2")     
   """
   images = list(image.to(device) for image in images)
-  targets = [{k: v.to(device)  if type(v) is not list else v for k, v in t.items() } 
-             for t in targets]
+  targets = [{k: v.to(device) for k, v in t.items() } for t in targets]
   return images, targets
