@@ -64,7 +64,7 @@ framerate: 5fps
 ## Resnet50
 To train:
 ````
-python scripts/train_faster.py --batch_size 2 --learning_rate 1e-3 --epochs 50 --feature_extractor resnet50
+python scripts/train_faster.py --batch_size 2 --learning_rate 2.5e-4 --epochs 50 --feature_extractor resnet50
 ````
      
 To evaluate:
