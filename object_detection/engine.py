@@ -149,8 +149,7 @@ def test_data(model_name, model, batch, device):
         with torch.no_grad():
             inf_out, train_out = model(batch_imgs)
         output = non_max_suppression(inf_out, conf_thres=0.25, iou_thres = 0.6) #conf = 0.25 to decrease the training time
-        for si, pred in enumerate(output):
-            shapes = targets[si]["shapes"]          
+        for si, pred in enumerate(output):          
             if pred is None:
                 res.update({targets[si]["image_id"].item():
                               {"boxes": torch.tensor([[0,0,0,0]]),
