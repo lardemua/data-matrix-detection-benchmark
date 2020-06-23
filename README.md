@@ -34,7 +34,7 @@ Training and Evaluation: Nvidia RTX2080ti
 
 To train:
 ````
-python scripts/train_faster.py --batch_size 4 --learning_rate 1e-4 --epochs 50 --feature_extractor resnet50fpn
+python scripts/train_faster.py --batch_size 4 --learning_rate 2.5e-4 --epochs 50 --feature_extractor resnet50fpn
 ````
 
 To evaluate:
@@ -46,18 +46,18 @@ Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.608    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.780    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.713    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.242    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.562    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.756    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.301    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.658    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.658    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.267    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.609    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.806    |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.681    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.924    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.840    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.480    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.676    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.737    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.311    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.752    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.725    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.642    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.735    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.798    |
 
 framerate: 5fps
 
@@ -96,7 +96,7 @@ framerate: 5.3fps
 
 To train:
 ````
-python scripts/train_faster.py --batch_size 4 --learning_rate 1e-4 --epochs 50 --feature_extractor mobilenetv2
+python scripts/train_faster.py --batch_size 4 --learning_rate 2.5e-4 --epochs 50 --feature_extractor mobilenetv2
 ````
 
 To evaluate:
