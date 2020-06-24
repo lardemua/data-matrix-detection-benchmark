@@ -108,20 +108,19 @@ Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.442    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.699    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.459    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.015    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.341    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.632    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.236    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.502    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.503    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.113    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.414    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.686    |
-
-frame rate: 10 fps
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.458    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.745    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.468    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.023    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.381    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.624    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.245    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.519    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.519    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.152    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.461    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.668    |
+ame rate: 10 fps
 
 # SSD512
 
