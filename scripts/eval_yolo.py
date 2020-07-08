@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import time 
 
-from object_detection.models.yolov3.yolov3_darknet import Darknet
+from object_detection.models.yolov3.yolov3_darknet_us import Darknet
 from object_detection.datasets.datamatrix_yolo import DataMatrixDataset
 from object_detection.utils.evaluation import convert_to_coco_api, CocoEvaluator
 from object_detection.utils.tools import get_arguments
@@ -61,7 +61,6 @@ def evaluate(model,data_loader,device):
         output = non_max_suppression(inf_out, conf_thres=0.001, iou_thres = 0.6)
         for si, pred in enumerate(output):
             taregs = targets[si]["boxes"]
-            shapes = targets[si]["shapes"]
             height, width = images[si].shape[1:]
             if pred is None:
                 box = torch.tensor([[0,0,0,0]])

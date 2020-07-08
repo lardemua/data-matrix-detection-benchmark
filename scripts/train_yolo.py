@@ -16,7 +16,7 @@ from ignite.handlers import (global_step_from_engine, ModelCheckpoint)
 
 #object_detection modules
 from object_detection.utils.tools import (get_arguments, get_scheduler)
-from object_detection.models.yolov3.yolov3_darknet import Darknet
+from object_detection.models.yolov3.yolov3_darknet_us import Darknet
 from object_detection.datasets.datamatrix_yolo import DataMatrixDataset
 from object_detection.engine import (create_detection_trainer, create_detection_evaluator)
 from object_detection.utils.evaluation import convert_to_coco_api 
@@ -72,13 +72,17 @@ if (args.model == "yolov3" or args.model == "yolov3_spp" or args.model == "yolov
 if args.state_dict is not None:
     chkpt = torch.load(args.state_dict, map_location="cpu")
     model.load_state_dict(chkpt, strict=False)
-    
+
 model.to(device)
 
 if (args.dataset == 'datamatrix'):
-    # training set 
+    model.nc = 1 # number of classes 
+    model.hyp = hyp 
+    model.gr = 1.0
+    hyp['cls'] *= model.nc / 80
+    # training set
     train_ds = DataMatrixDataset(mode = "train", 
-                                img_size = 1024, 
+                                img_size = 896, #1024, 
                                 batch_size = args.batch_size,
                                 augment = True,
                                 hyp = hyp,  # augmentation hyperparameters
@@ -87,13 +91,10 @@ if (args.dataset == 'datamatrix'):
 
     # validation set
     val_ds = DataMatrixDataset(mode = "val",
-                            img_size = 1024,
+                            img_size = 896,#1024,
                             batch_size = args.batch_size,
                             hyp = hyp,
                             rect = True)
-    model.nc = 1
-    model.hyp = hyp 
-    model.gr = 0.0
 
 # training set dataloader
 train_loader = DataLoader(train_ds,
@@ -129,7 +130,8 @@ for k, v in dict(model.named_parameters()).items():
     elif "Conv2d.weight" in k:
         pg1 += [v]
     else:
-        pg0 += [v]    
+        pg0 += [v]  
+        
 optimizer = optim.SGD(pg0, lr=hyp['lr0'], momentum=hyp['momentum'], nesterov=True)
 optimizer.add_param_group({'params': pg1, 'weight_decay': hyp['weight_decay']})  # add pg1 with weight_decay
 optimizer.add_param_group({'params': pg2})  # add pg2 (biases)

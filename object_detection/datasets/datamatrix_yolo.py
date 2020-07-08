@@ -200,16 +200,23 @@ def load_image(self, path_img):
         w0, h0 = img.shape[1], img.shape[0]
         
     r = self.img_size / max(h0, w0)  # resize image to img_size
-    if r < 1 or (self.augment and (r != 1)):  # always resize down, only resize up if training with augmentation
-        interp = cv2.INTER_LINEAR if self.augment else cv2.INTER_AREA  # LINEAR for training, AREA for testing
+    if r != 1:  # always resize down, only resize up if training with augmentation
+        interp = cv2.INTER_AREA if r < 1 and not self.augment else cv2.INTER_LINEAR
         img = cv2.resize(img, (int(w0 * r), int(h0 * r)), interpolation=interp)
     return img, (h0, w0), img.shape[:2]  # img, hw_original, hw_resized
     
 
 def augment_hsv(img, hgain=0.5, sgain=0.5, vgain=0.5):
-    x = np.random.uniform(-1, 1, 3) * [hgain, sgain, vgain] + 1  # random gains
-    img_hsv = (cv2.cvtColor(img, cv2.COLOR_BGR2HSV) * x).clip(None, 255).astype(np.uint8)
-    np.clip(img_hsv[:, :, 0], None, 179, out=img_hsv[:, :, 0])  # inplace hue clip (0 - 179 deg)
+    r = np.random.uniform(-1, 1, 3) * [hgain, sgain, vgain] + 1  # random gains
+    hue, sat, val = cv2.split(cv2.cvtColor(img, cv2.COLOR_BGR2HSV))
+    dtype = img.dtype  # uint8
+
+    x = np.arange(0, 256, dtype=np.int16)
+    lut_hue = ((x * r[0]) % 180).astype(dtype)
+    lut_sat = np.clip(x * r[1], 0, 255).astype(dtype)
+    lut_val = np.clip(x * r[2], 0, 255).astype(dtype)
+
+    img_hsv = cv2.merge((cv2.LUT(hue, lut_hue), cv2.LUT(sat, lut_sat), cv2.LUT(val, lut_val))).astype(dtype)
     cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR, dst=img)  # no return needed
 
 
