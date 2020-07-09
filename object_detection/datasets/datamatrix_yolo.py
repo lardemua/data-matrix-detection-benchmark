@@ -26,7 +26,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
                  batch_size=16, 
                  augment=False, 
                  hyp=None, 
-                 rect=True):        
+                 rect=True,):        
         self.mode = mode
         if self.mode == "train" or self.mode == "val":
                 self.imgs = os.listdir(os.path.join(PATH_IMAGES, self.mode))
@@ -68,15 +68,11 @@ class DataMatrixDataset(Dataset):  # for training/testing
             
     def __getitem__(self, idx):
         hyp = self.hyp
-        
         filename = self.labels_file["External ID"][idx]
-        img, (h0, w0), (h, w) = load_image(self, os.path.join(PATH_IMAGES, self.mode, filename))
-        shape = self.batch_shapes[self.batch[idx]] if self.rect else self.img_size
-        img, ratio, pad = letterbox(img, shape, auto=False, scaleup=self.augment)
-        shapes = (h0, w0), ((h / h0, w / w0), pad)
+        path_img = os.path.join(PATH_IMAGES, self.mode, filename)
         
-            
         #Labels
+        img, (h0, w0), (h, w) = load_image(self, path_img)
         lbl_file_row = self.labels_file[self.labels_file.index == idx ]
         lbl = lbl_file_row["Label"][idx]
         num_objs = len(lbl['DataMatrix'])
@@ -108,14 +104,25 @@ class DataMatrixDataset(Dataset):  # for training/testing
         
     
         labels_ori = np.array(labels_ori, dtype = np.float32)
-        # Load labels
-        labels = []
-        labels = labels_ori.copy()
-        # Labels in pixels 
-        labels[:, 1] = ratio[0] * w * (labels_ori[:, 1] - labels_ori[:, 3] / 2) + pad[0]  # pad width
-        labels[:, 2] = ratio[1] * h * (labels_ori[:, 2] - labels_ori[:, 4] / 2) + pad[1]  # pad height
-        labels[:, 3] = ratio[0] * w * (labels_ori[:, 1] + labels_ori[:, 3] / 2) + pad[0]
-        labels[:, 4] = ratio[1] * h * (labels_ori[:, 2] + labels_ori[:, 4] / 2) + pad[1]
+        
+        if self.mosaic:
+            img, labels = load_mosaic(self, idx, path_img, labels_ori)
+            shapes = None
+        
+        else:
+            shape = self.batch_shapes[self.batch[idx]] if self.rect else self.img_size
+            img, ratio, pad = letterbox(img, shape, auto=False, scaleup=self.augment)
+            shapes = (h0, w0), ((h / h0, w / w0), pad)
+        
+            # Load labels
+            labels = []
+            labels = labels_ori.copy()
+        
+            # Labels in pixels 
+            labels[:, 1] = ratio[0] * w * (labels_ori[:, 1] - labels_ori[:, 3] / 2) + pad[0]  # pad width
+            labels[:, 2] = ratio[1] * h * (labels_ori[:, 2] - labels_ori[:, 4] / 2) + pad[1]  # pad height
+            labels[:, 3] = ratio[0] * w * (labels_ori[:, 1] + labels_ori[:, 3] / 2) + pad[0]
+            labels[:, 4] = ratio[1] * h * (labels_ori[:, 2] + labels_ori[:, 4] / 2) + pad[1]
         
         if self.mode == "val":
             boxes = torch.as_tensor(labels[:, 1:5], dtype = torch.float32)
@@ -220,20 +227,20 @@ def augment_hsv(img, hgain=0.5, sgain=0.5, vgain=0.5):
     cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR, dst=img)  # no return needed
 
 
-def load_mosaic(self, index):
+def load_mosaic(self, index, path_img, norm_labels):
     # loads images in a mosaic
 
     labels4 = []
     s = self.img_size
     xc, yc = [int(random.uniform(s * 0.5, s * 1.5)) for _ in range(2)]  # mosaic center x, y
-    img4 = np.zeros((s * 2, s * 2, 3), dtype=np.uint8) + 128  # base image with 4 tiles
     indices = [index] + [random.randint(0, len(self.labels) - 1) for _ in range(3)]  # 3 additional image indices
     for i, index in enumerate(indices):
         # Load image
-        img, _, (h, w) = load_image(self, index)
+        img, _, (h, w) = load_image(self, path_img)
 
         # place img in img4
         if i == 0:  # top left
+            img4 = np.full((s * 2, s * 2, img.shape[2]), 114, dtype=np.uint8)  # base image with 4 tiles
             x1a, y1a, x2a, y2a = max(xc - w, 0), max(yc - h, 0), xc, yc  # xmin, ymin, xmax, ymax (large image)
             x1b, y1b, x2b, y2b = w - (x2a - x1a), h - (y2a - y1a), w, h  # xmin, ymin, xmax, ymax (small image)
         elif i == 1:  # top right
@@ -250,24 +257,15 @@ def load_mosaic(self, index):
         padw = x1a - x1b
         padh = y1a - y1b
 
-        # Load labels
-        label_path = self.label_files[index]
-        if os.path.isfile(label_path):
-            x = self.labels[index]
-            if x is None:  # labels not preloaded
-                with open(label_path, 'r') as f:
-                    x = np.array([x.split() for x in f.read().splitlines()], dtype=np.float32)
-
-            if x.size > 0:
-                # Normalized xywh to pixel xyxy format
-                labels = x.copy()
-                labels[:, 1] = w * (x[:, 1] - x[:, 3] / 2) + padw
-                labels[:, 2] = h * (x[:, 2] - x[:, 4] / 2) + padh
-                labels[:, 3] = w * (x[:, 1] + x[:, 3] / 2) + padw
-                labels[:, 4] = h * (x[:, 2] + x[:, 4] / 2) + padh
-            else:
-                labels = np.zeros((0, 5), dtype=np.float32)
-            labels4.append(labels)
+        # Labels
+        x = norm_labels
+        labels = x.copy()
+        if x.size > 0:  # Normalized xywh to pixel xyxy format
+            labels[:, 1] = w * (x[:, 1] - x[:, 3] / 2) + padw
+            labels[:, 2] = h * (x[:, 2] - x[:, 4] / 2) + padh
+            labels[:, 3] = w * (x[:, 1] + x[:, 3] / 2) + padw
+            labels[:, 4] = h * (x[:, 2] + x[:, 4] / 2) + padh
+        labels4.append(labels)
 
     # Concat/clip labels
     if len(labels4):
@@ -278,14 +276,13 @@ def load_mosaic(self, index):
     # Augment
     # img4 = img4[s // 2: int(s * 1.5), s // 2:int(s * 1.5)]  # center crop (WARNING, requires box pruning)
     img4, labels4 = random_affine(img4, labels4,
-                                  degrees=self.hyp['degrees'] * 1,
-                                  translate=self.hyp['translate'] * 1,
-                                  scale=self.hyp['scale'] * 1,
-                                  shear=self.hyp['shear'] * 1,
+                                  degrees=self.hyp['degrees'],
+                                  translate=self.hyp['translate'],
+                                  scale=self.hyp['scale'],
+                                  shear=self.hyp['shear'],
                                   border=-s // 2)  # border to remove
 
     return img4, labels4
-
 
 def letterbox(img, new_shape=(416, 416), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True):
     # Resize image to a 32-pixel-multiple rectangle https://github.com/ultralytics/yolov3/issues/232

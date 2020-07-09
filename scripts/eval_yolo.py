@@ -42,25 +42,25 @@ def evaluate(model,data_loader,device):
     - device: device on which the network will be evaluated
     """
     cpu_device = torch.device("cpu")
-    model.eval()
+    gpu_device = torch.device(device)
+    model.eval().to(gpu_device)
     coco = convert_to_coco_api(data_loader.dataset)
     coco_evaluator = CocoEvaluator(coco)
     evaluator_times = []
     proc_times = []
     for images, targets in data_loader:
         res = {}
-        images, targets = transform_inputs(images, targets, device)
+        images, targets = transform_inputs(images, targets, gpu_device)
         images_eval = [image.float()/255 for image in images] #normalized
         batch = torch.stack(images_eval)
 
         
         init = time.time()
-        inf_out, eval_out = model.to(device)(batch)
+        inf_out, eval_out = model(batch)
         proc_times.append(time.time() - init)
         
         output = non_max_suppression(inf_out, conf_thres=0.001, iou_thres = 0.6)
         for si, pred in enumerate(output):
-            taregs = targets[si]["boxes"]
             height, width = images[si].shape[1:]
             if pred is None:
                 box = torch.tensor([[0,0,0,0]])
