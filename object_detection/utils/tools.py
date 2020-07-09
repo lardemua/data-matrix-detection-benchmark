@@ -9,6 +9,16 @@ def get_arguments():
     """Determines each command lines input and parses them
     """
     parser = ArgumentParser()
+    
+    def str2bool(v):
+        if isinstance(v, bool):
+            return v
+        if v.lower() in ('yes', 'true', 't', 'y', '1'):
+            return True
+        elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+            return False
+        else:
+            raise argparse.ArgumentTypeError('Boolean value expected.')
 
     #Dataset choice
     parser.add_argument(
@@ -116,7 +126,7 @@ def get_arguments():
     '--imgs_rect',
     '-rect',
     default=True,
-    type=bool,
+    type=str2bool,
     required=False
     )
 

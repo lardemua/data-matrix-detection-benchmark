@@ -47,6 +47,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
         self.hyp = hyp
         self.rect = rect
         self.mosaic = self.augment and not self.rect  # load 4 images at a time into a mosaic (only during training)
+
         
         if self.rect:
             s = [(Image.open(os.path.join(PATH_IMAGES, self.mode,f))).size for f in self.imgs]
@@ -233,7 +234,7 @@ def load_mosaic(self, index, path_img, norm_labels):
     labels4 = []
     s = self.img_size
     xc, yc = [int(random.uniform(s * 0.5, s * 1.5)) for _ in range(2)]  # mosaic center x, y
-    indices = [index] + [random.randint(0, len(self.labels) - 1) for _ in range(3)]  # 3 additional image indices
+    indices = [index] + [random.randint(0, self.labels_file.shape[0] - 1) for _ in range(3)]  # 3 additional image indices
     for i, index in enumerate(indices):
         # Load image
         img, _, (h, w) = load_image(self, path_img)
