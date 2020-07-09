@@ -104,7 +104,7 @@ else:
     
 if args.dataset == 'datamatrix':    
     val_ds = DataMatrixDataset(mode = "val",
-                                img_size = 1024,
+                                img_size = 896,
                                 batch_size = args.batch_size,
                                 hyp = hyp,
                                 rect = True)
