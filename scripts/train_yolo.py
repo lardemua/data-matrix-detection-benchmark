@@ -16,7 +16,7 @@ from ignite.handlers import (global_step_from_engine, ModelCheckpoint)
 
 #object_detection modules
 from object_detection.utils.tools import (get_arguments, get_scheduler)
-from object_detection.models.yolov3.yolov3_darknet_us import Darknet
+from object_detection.models.yolo.yolo_darknet import Darknet
 from object_detection.datasets.datamatrix_yolo import DataMatrixDataset
 from object_detection.engine import (create_detection_trainer, create_detection_evaluator)
 from object_detection.utils.evaluation import convert_to_coco_api 
@@ -82,7 +82,7 @@ if (args.dataset == 'datamatrix'):
     hyp['cls'] *= model.nc / 80
     # training set
     train_ds = DataMatrixDataset(mode = "train", 
-                                img_size = 896, #1024, 
+                                img_size = 896,
                                 batch_size = args.batch_size,
                                 augment = True,
                                 hyp = hyp,  # augmentation hyperparameters
@@ -91,7 +91,7 @@ if (args.dataset == 'datamatrix'):
 
     # validation set
     val_ds = DataMatrixDataset(mode = "val",
-                            img_size = 896,#1024,
+                            img_size = 896,
                             batch_size = args.batch_size,
                             hyp = hyp,
                             rect = True)

@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import time 
 
-from object_detection.models.yolov3.yolov3_darknet_us import Darknet
+from object_detection.models.yolo.yolo_darknet import Darknet
 from object_detection.datasets.datamatrix_yolo import DataMatrixDataset
 from object_detection.utils.evaluation import convert_to_coco_api, CocoEvaluator
 from object_detection.utils.tools import get_arguments

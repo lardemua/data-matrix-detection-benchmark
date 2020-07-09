@@ -192,7 +192,7 @@ framerate: 71fps
 
 ## v3 SPP
 
-Input size: width = 1024
+Input size: width = 896
 
 To train:
 ````
@@ -225,7 +225,7 @@ Evaluation:
 
 ## v3 
 
-Input size: width = 1024
+Input size: width = 896
 
 To train:
 ````
@@ -258,7 +258,7 @@ Evaluation:
 
 ## v4
 
-Input size: width = 1024
+Input size: width = 896
 
 To train:
 ````
@@ -274,23 +274,25 @@ Evaluation:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.196    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.358    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.191    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.058    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.411    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.487    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.129    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.281    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.312    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.179    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.517    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.725    |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.330    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.610    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.330    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.229    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.492    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.377    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.185    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.428    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.438    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.350    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.576    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.625    |
 
-  framerate: 33 fps
+  framerate: 40 fps
 
 # Acknowledgements
 
 Repos: [MobileNetV2 + Single Shot Multibox Detector](https://github.com/qfgaohao/pytorch-ssd) and [YOLOs](https://github.com/ultralytics/yolov3)
 
 Project: This work was supported by the PRODUTECH II SIF-POCI-01-0247-FEDER-024541 Project.
+
+
