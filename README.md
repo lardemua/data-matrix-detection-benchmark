@@ -14,9 +14,12 @@ Benchmark for the detection of data matrix landmarks using Deep Learning archite
     * [Resnet50](#resnet50)
     * [MobileNetV2](#mobilenetv2)
 - [YOLO](#yolo)
-    * [v3 SPP](#v3-spp)
     * [v3](#v3)
-    * [v4](#v4)  
+    * [v3 mosaic aug](#v3-mosaic-aug)
+    * [v3 SPP](#v3-spp)
+    * [v3 SPP mosaic aug](#v3-spp-mosaic-aug)
+    * [v4](#v4)
+    * [v4 mosaic aug](#v4-mosaic-aug)   
 - [Acknowledgements](#acknowledgements)
 
 
@@ -190,42 +193,9 @@ framerate: 71fps
 
 # YOLO 
 
-## v3 SPP
-
 Input size: width = 896
-
-To train:
-````
-python scripts/train_yolo.py --model yolov3_spp --batch_size 4 --epochs 400
-````
-
-To evaluate:
-````
-python scripts/eval_yolo.py --model yolov3_spp --batch_size 4 --state_dict <model.pth>
-````
-
-Evaluation:
-
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.324    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.590    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.315    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.213    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.546    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.700    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.192    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.422    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.431    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.344    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.617    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.700    |
-
-  framerate: 58 fps
 
 ## v3 
-
-Input size: width = 896
 
 To train:
 ````
@@ -256,9 +226,100 @@ Evaluation:
 
   framerate: 40 fps
 
-## v4
+## v3 mosaic aug
 
-Input size: width = 896
+To train:
+````
+python scripts/train_yolo.py --model yolov3 --batch_size 4 --epochs 400 --imgs_rect False
+````
+
+To evaluate:
+````
+python scripts/eval_yolo.py --model yolov3 --batch_size 4 --state_dict <model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.375    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.646    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.380    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.276    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.588    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.900    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.209    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.453    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.463    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.367    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.668    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.900    |
+
+  framerate: 38 fps
+
+## v3 SPP
+
+To train:
+````
+python scripts/train_yolo.py --model yolov3_spp --batch_size 4 --epochs 400
+````
+
+To evaluate:
+````
+python scripts/eval_yolo.py --model yolov3_spp --batch_size 4 --state_dict <model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.324    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.590    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.315    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.213    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.546    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.700    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.192    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.422    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.431    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.344    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.617    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.700    |
+
+  framerate: 58 fps
+
+## v3 SPP mosaic aug
+
+To train:
+````
+python scripts/train_yolo.py --model yolov3_spp --batch_size 4 --epochs 400 --imgs_rect False
+````
+
+To evaluate:
+````
+python scripts/eval_yolo.py --model yolov3_spp --batch_size 4 --state_dict <model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.353    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.600    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.360    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.248    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.580    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.900    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.194    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.433    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.439    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.336    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.659    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.900    |
+
+  framerate: 58 fps
+
+## v4
 
 To train:
 ````
@@ -286,6 +347,37 @@ Evaluation:
   | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.352    |
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.628    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.800    |
+
+  framerate: 55 fps
+
+## v4 mosaic aug
+
+To train:
+````
+python scripts/train_yolo.py --model yolov4 --batch_size 2 --epochs 400 --imgs_rect False
+````
+
+To evaluate:
+````
+python scripts/eval_yolo.py --model yolov4 --batch_size 2 --state_dict <model.pth>
+````
+
+Evaluation:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.392    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.627    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.428    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.289    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.626    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.900    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.213    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.471    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.477    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.367    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.711    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.900    |
 
   framerate: 55 fps
 
