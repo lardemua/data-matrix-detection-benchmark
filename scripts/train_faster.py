@@ -13,12 +13,13 @@ from ignite.handlers import (global_step_from_engine, ModelCheckpoint)
 
 # object_detection modules
 from object_detection.datasets.datamatrix import DataMatrixDataset
+from object_detection.datasets.coco import COCODetection
+
 from object_detection.models.faster.faster_rcnn import (resnet50fpn_fasterRCNN, 
                                                         resnet50_fasterRCNN, 
                                                         mobilenetv2_fasterRCNN)
 from object_detection.utils.prepare_data import (get_tfms_faster,
-                                                 collate_fn, 
-                                                 transform_inputs)
+                                                 collate_fn)
 from object_detection.utils.tools import (get_arguments, get_scheduler)
 from object_detection.engine import (create_detection_trainer, create_detection_evaluator)
 from object_detection.utils.evaluation import convert_to_coco_api
@@ -40,11 +41,18 @@ torch.cuda.set_device(local_rank)
 device = torch.device("cuda")
 
 
-train_tfms, val_tfms = get_tfms_faster()
+
 
 if args.dataset == "datamatrix":
-  train_ds = DataMatrixDataset(transforms = train_tfms)
-  val_ds = DataMatrixDataset(transforms = val_tfms, mode = 'val')
+    train_tfms, val_tfms = get_tfms_faster(ds = "datamatrix")
+    train_ds = DataMatrixDataset(transforms = train_tfms)
+    val_ds = DataMatrixDataset(transforms = val_tfms, mode = 'val')
+    n_classes = 2
+elif args.dataset == "coco":
+    train_tfms, val_tfms = get_tfms_faster(ds = "coco")
+    train_ds = COCODetection(transforms = train_tfms)
+    val_ds = COCODetection(transforms = val_tfms, mode = 'val')
+    n_classes = 91
 
 
 if args.distributed:
@@ -79,11 +87,11 @@ coco_api_val_dataset = convert_to_coco_api(val_ds)
 
 if (args.model == "faster"):
     if (args.feature_extractor == "mobilenetv2"):
-        model = mobilenetv2_fasterRCNN(2)
+        model = mobilenetv2_fasterRCNN(n_classes)
     elif (args.feature_extractor == "resnet50fpn"):
-        model = resnet50fpn_fasterRCNN(2)
+        model = resnet50fpn_fasterRCNN(n_classes)
     elif (args.feature_extractor == "resnet50"):
-        model = resnet50_fasterRCNN(2)
+        model = resnet50_fasterRCNN(n_classes)
 else:
     sys.exit("You did not pick the right script! Exiting...")
 
@@ -131,7 +139,7 @@ trainer.add_event_handler(
 
 if local_rank == 0:
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = "checkpoints/" + args.feature_extractor + args.model + "/{}".format(dirname)
+    dirname = "checkpoints/" + args.dataset + "/" + args.feature_extractor + args.model + "/{}".format(dirname)
     
     checkpointer = ModelCheckpoint(
         dirname=dirname,

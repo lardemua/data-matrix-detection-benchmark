@@ -24,11 +24,11 @@ def get_arguments():
     parser.add_argument(
         "--dataset",
         "-d",
-        choices = ['datamatrix'],
+        choices = ['datamatrix', 'coco'],
         default = 'datamatrix',
         help=("The dataset to use to train the model; "
               "Default: datamatrix; "
-              "Possible choices datamatrix")
+              "Possible choices datamatrix, coco")
     )
 
     #Model choice

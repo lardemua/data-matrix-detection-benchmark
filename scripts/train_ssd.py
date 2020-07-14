@@ -150,7 +150,7 @@ trainer.add_event_handler(
 
 if local_rank == 0:
     dirname = strftime("%d-%m-%Y_%Hh%Mm%Ss", localtime())
-    dirname = "checkpoints/" + args.feature_extractor + args.model + "/{}".format(dirname)
+    dirname = "checkpoints/" + args.dataset + "/" + args.feature_extractor + args.model + "/{}".format(dirname)
     
     checkpointer = ModelCheckpoint(
         dirname=dirname,

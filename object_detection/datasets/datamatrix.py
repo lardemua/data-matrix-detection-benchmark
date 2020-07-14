@@ -23,7 +23,7 @@ class DataMatrixDataset(object):
                 idxs = [idx for idx in range(self.labels_file.shape[0])]
                 self.labels_file.set_index([pd.Index(idxs)], inplace = True) 
         else:
-            raise Exception("Oops. There are only two models: train and val!")
+            raise Exception("Oops. There are only two modes: train and val!")
         
     def __getitem__(self, idx):
         filename = self.labels_file["External ID"][idx]
