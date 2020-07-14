@@ -57,9 +57,9 @@ if args.model == 'faster':
 else:
     sys.exit("You did not pick the right script! Exiting...")
 
-train_tfms, val_tfms = get_tfms_faster()
+train_tfms, val_tfms = get_tfms_faster(ds = args.dataset)
 if args.dataset == 'datamatrix':
-  val_ds = DataMatrixDataset(transforms = val_tfms, mode = 'val')
+  val_ds = DataMatrixDataset(transforms = val_tfms, mode = 'test')
   val_loader = DataLoader(
      val_ds,
      batch_size = args.batch_size,

@@ -59,7 +59,7 @@ else:
     sys.exit("You did not pick the right script! Exiting...")
 
 if (args.dataset == 'datamatrix'):
-  val_ds = DataMatrixDataset(mode = 'val')
+  val_ds = DataMatrixDataset(mode = 'test')
   
   
 # Loading weights to the network

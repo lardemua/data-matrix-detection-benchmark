@@ -14,7 +14,7 @@ img_formats = ['.bmp', '.jpg', '.jpeg', '.png', '.tif', '.dng']
 vid_formats = ['.mov', '.avi', '.mp4']
 
 
-PATH = "/home/tmr/data-matrix-dataset-loading/dataset_resized_4/"
+PATH = "/home/tmr/data-matrix-dataset-loading/dataset/"
 PATH_IMAGES = os.path.join(PATH, "images")
 PATH_LABELS = os.path.join(PATH, "labels")
 
@@ -28,13 +28,25 @@ class DataMatrixDataset(Dataset):  # for training/testing
                  hyp=None, 
                  rect=True,):        
         self.mode = mode
-        if self.mode == "train" or self.mode == "val":
+        if self.mode == "train" or self.mode == "val" or self.mode == "test":
                 self.imgs = os.listdir(os.path.join(PATH_IMAGES, self.mode))
                 self.lbls = os.path.join(PATH_LABELS, "data_matrix_" + self.mode + ".json")
                 self.labels_file = pd.read_json(self.lbls)
                 if self.mode == "val":
                     idxs = [idx for idx in range(self.labels_file.shape[0])]
-                    self.labels_file.set_index([pd.Index(idxs)], inplace = True) 
+                    self.labels_file.set_index([pd.Index(idxs)], inplace = True)
+                if self.mode == "test":
+                    df = self.labels_file
+                    for i in range(len(df["Label"])):
+                        objects = df["Label"][i]["objects"]
+                        image =[]
+                        for n_o in range(len(objects)):
+                            bbox = objects[n_o]["polygon"]
+                            image.append({"geometry":bbox})
+                        image_rep = {"DataMatrix":image}
+                        df.loc[df.index == i, "Label"] = image_rep
+                    
+                self.labels_file = df 
         else:
             raise Exception("Oops. There are only two modes: train and val!")
         n = len(self.imgs)
@@ -125,7 +137,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
             labels[:, 3] = ratio[0] * w * (labels_ori[:, 1] + labels_ori[:, 3] / 2) + pad[0]
             labels[:, 4] = ratio[1] * h * (labels_ori[:, 2] + labels_ori[:, 4] / 2) + pad[1]
         
-        if self.mode == "val":
+        if self.mode == "val" or self.mode == "test":
             boxes = torch.as_tensor(labels[:, 1:5], dtype = torch.float32)
             labels = torch.zeros((num_objs), dtype = torch.int64)
             image_id = torch.tensor(idx)

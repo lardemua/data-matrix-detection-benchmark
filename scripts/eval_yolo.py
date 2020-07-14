@@ -103,7 +103,7 @@ else:
     sys.exit("You did not pick the right script! Exiting...")
     
 if args.dataset == 'datamatrix':    
-    val_ds = DataMatrixDataset(mode = "val",
+    val_ds = DataMatrixDataset(mode = "test",
                                 img_size = 896,
                                 batch_size = args.batch_size,
                                 hyp = hyp,
