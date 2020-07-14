@@ -46,8 +46,7 @@ def evaluate(predictor, val_ds):
 
 
 args = get_arguments()
-dev = args.device if args.device is not None else "cpu"
-device = torch.device(dev)
+device = torch.device("cuda")
 
 if (args.model == "ssd512" and args.feature_extractor == "mobilenetv2"):
     from object_detection.utils.ssd import ssd512_config as config

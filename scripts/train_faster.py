@@ -25,8 +25,6 @@ from object_detection.engine import (create_detection_trainer, create_detection_
 from object_detection.utils.evaluation import convert_to_coco_api
 
 
-
-
 args = get_arguments()
 
 if args.distributed:
@@ -39,9 +37,6 @@ else:
 
 torch.cuda.set_device(local_rank)
 device = torch.device("cuda")
-
-
-
 
 if args.dataset == "datamatrix":
     train_tfms, val_tfms = get_tfms_faster(ds = "datamatrix")

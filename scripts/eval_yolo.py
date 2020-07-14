@@ -42,15 +42,14 @@ def evaluate(model,data_loader,device):
     - device: device on which the network will be evaluated
     """
     cpu_device = torch.device("cpu")
-    gpu_device = torch.device(device)
-    model.eval().to(gpu_device)
+    model.eval().to(device)
     coco = convert_to_coco_api(data_loader.dataset)
     coco_evaluator = CocoEvaluator(coco)
     evaluator_times = []
     proc_times = []
     for images, targets in data_loader:
         res = {}
-        images, targets = transform_inputs(images, targets, gpu_device)
+        images, targets = transform_inputs(images, targets, device)
         images_eval = [image.float()/255 for image in images] #normalized
         batch = torch.stack(images_eval)
 
@@ -101,7 +100,9 @@ if (args.model == "yolov3" or args.model == "yolov3_spp" or args.model == "yolov
     model = Darknet(yolo_config)
 else:
     sys.exit("You did not pick the right script! Exiting...")
-    
+  
+device = torch.device("cuda")
+  
 if args.dataset == 'datamatrix':    
     val_ds = DataMatrixDataset(mode = "test",
                                 img_size = 896,
@@ -122,4 +123,4 @@ if args.state_dict:
 else:
     raise ValueError("You have to load a model through the --state_dict argument!")
 
-evaluate(model, val_loader, args.device)
+evaluate(model, val_loader, device)

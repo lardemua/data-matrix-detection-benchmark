@@ -56,8 +56,10 @@ if args.model == 'faster':
         model = resnet50_fasterRCNN(2)
 else:
     sys.exit("You did not pick the right script! Exiting...")
-
+    
+device = torch.device("cuda")
 train_tfms, val_tfms = get_tfms_faster(ds = args.dataset)
+
 if args.dataset == 'datamatrix':
   val_ds = DataMatrixDataset(transforms = val_tfms, mode = 'test')
   val_loader = DataLoader(
@@ -76,8 +78,8 @@ if args.state_dict:
 else:
     raise ValueError("You have to load a model through the --state_dict argument!")
 
-model.to(args.device)
-evaluate(model, val_loader, args.device)
+model.to(device)
+evaluate(model, val_loader, device)
 
 
 

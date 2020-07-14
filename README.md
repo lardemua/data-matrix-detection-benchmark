@@ -45,7 +45,7 @@ To evaluate:
 python scripts/eval_faster.py --state_dict <PATH to model.pth> --feature_extractor resnet50fpn
 ````
 
-Evaluation:
+On validation set:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
@@ -62,6 +62,23 @@ Evaluation:
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.735    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.798    |
 
+On test set:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.728    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.953    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.905    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.210    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.710    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.809    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.140    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.740    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.772    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.452    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.754    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.844    |
+
 framerate: 5fps
 
 ## Resnet50
@@ -75,7 +92,7 @@ To evaluate:
 python scripts/eval_faster.py --state_dict <PATH to model.pth> --feature_extractor resnet50
 ````
 
-Evaluation:
+On validation set:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
@@ -92,6 +109,23 @@ Evaluation:
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.524    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.768    |
 
+On test set:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.652    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.894    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.750    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.032    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.603    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.806    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.143    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.665    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.688    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.145    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.644    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.840    |
+
 framerate: 5.3fps
 
 
@@ -107,7 +141,7 @@ To evaluate:
 python scripts/eval_faster.py --feature_extractor mobilenetv2 --state_dict <PATH to model.pth> 
 ````
 
-Evaluation:
+On validation set:
 
   |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
   | :----------------------: | :-------------: | :------: | :-------: | :----------: |
@@ -123,7 +157,25 @@ Evaluation:
   | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.152    |
   | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.461    |
   | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.668    |
-ame rate: 10 fps
+
+On test set:
+
+  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
+  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
+  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.549    |
+  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.857    |
+  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.595    |
+  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.004    |
+  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.462    |
+  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.767    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.137    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.564    |
+  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.586    |
+  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.048    |
+  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.511    |
+  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.804    |
+
+frame rate: 10 fps
 
 # SSD512
 

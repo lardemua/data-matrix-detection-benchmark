@@ -92,13 +92,7 @@ def get_arguments():
         default=8,
         help = "Number of subprocesses to use for data loading; Default: 4"
     )
-    parser.add_argument(
-        "--device",
-        "-dev",
-        default = 'cuda:0',
-        help = "Device on which the network will be trained; Default: cuda:2"
-    )
-  
+
     parser.add_argument(
         "--distributed",
         "-dist",
