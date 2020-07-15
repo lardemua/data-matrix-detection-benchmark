@@ -57,7 +57,7 @@ def get_arguments():
         "-pre",
         default=True,
         type=str2bool,
-        required=False
+        required=False,
         help = ("Torchvision provides COCO weights for Resnet50 FPN and ImageNet weights for Resnet50 and MobileNetV2.")
         )
 
