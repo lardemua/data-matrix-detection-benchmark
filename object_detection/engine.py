@@ -170,16 +170,17 @@ def test_data(model_name, model, batch, device):
         
     
 
-def create_detection_evaluator(model_name, model, device, coco_api_val_dataset):
+def create_detection_evaluator(model_name, model, device, coco_api_val_dataset, logging = True):
     def update_model(engine, batch):
         images, targets, res = test_data(model_name, model, batch, device)
         engine.state.coco_evaluator.update(res)
         return images, targets, res
     
     evaluator = Engine(update_model)
-    ProgressBar(persist=False) \
-        .attach(evaluator)
-    
+    if logging:
+        ProgressBar(persist=False) \
+            .attach(evaluator)
+        
     @evaluator.on(Events.STARTED)
     def on_evaluation_started(engine):
         model.eval()
@@ -190,7 +191,8 @@ def create_detection_evaluator(model_name, model, device, coco_api_val_dataset):
         engine.state.coco_evaluator.synchronize_between_processes()
         print("\nResults val set:")
         engine.state.coco_evaluator.accumulate()
-        engine.state.coco_evaluator.summarize()
+        if logging:
+            engine.state.coco_evaluator.summarize()
      
         
         

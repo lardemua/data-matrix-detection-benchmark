@@ -114,7 +114,8 @@ if args.distributed:
 evaluator = create_detection_evaluator(args.model,
                                        model, 
                                        device, 
-                                       coco_api_val_dataset
+                                       coco_api_val_dataset,
+                                       logging = local_rank == 0
                                        )
 
 trainer = create_detection_trainer(args.model, 
