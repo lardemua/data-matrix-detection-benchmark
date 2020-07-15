@@ -7,9 +7,12 @@ Benchmark for the detection of data matrix landmarks using Deep Learning archite
 - [Table of Contents](#table-of-contents)
 - [Hardware](#hardware) 
 - [Faster RCNN](#faster-rcnn)
-    * [Resnet50FPN](#resnet50fpn)
-    * [Resnet50](#resnet50)
-    * [MobileNetV2](#mobilenetv2)
+    * [Resnet50FPN pretrained](#resnet50fpn-pretrained)
+    * [Resnet50FPN from scratch](#resnet50fpn-from-scratch)
+    * [Resnet50 pretrained](#resnet50-pretrained)
+    * [Resnet50 from scratch](#resnet50-from-scratch)
+    * [MobileNetV2 pretrained](#mobilenetv2-pretrained)
+    * [MobileNetV2 from scratch](#mobilenetv2-from-scratch)
 - [SSD512](#ssd512)
     * [Resnet50](#resnet50)
     * [MobileNetV2](#mobilenetv2)
@@ -24,20 +27,25 @@ Benchmark for the detection of data matrix landmarks using Deep Learning archite
 
 
 # Overview
-This repo is an aggregation of Faster RCNN, SSD512 and YOLOV3(608) for Data Matrix detection. The performance comparison between all models is also performed. The training set images size from the original dataset were 8000*6000. The original training set images were reduced 4 times due to the faster forward propagation of the single shot methods and the way how Python deals with memory deallocation (see [Python Garbage Collection](https://www.digi.com/resources/documentation/digidocs/90001537/references/r_python_garbage_coll.htm)).   
+This repo is a comparison between Faster RCNN, SSD512 and YOLOV3(608) for Data Matrix detection. The performance comparison between all models is also performed. The training set images size from the original dataset were 8000*6000. The original training set images were reduced 4 times due to the faster forward propagation of the single shot methods and the way how Python deals with memory deallocation (see [Python Garbage Collection](https://www.digi.com/resources/documentation/digidocs/90001537/references/r_python_garbage_coll.htm)).   
 
 # Hardware
 
 Training and Evaluation: Nvidia RTX2080ti
 
 
-# Faster RCNN
+# Faster RCNN fine tuning
 
-## Resnet50FPN
+**Weights:**
+
+* Resnet50 FPN: COCO
+* Resnet50 and MobileNetV2: Imagenet
+
+## Resnet50FPN pretrained
 
 To train:
 ````
-python scripts/train_faster.py --batch_size 4 --learning_rate 2.5e-4 --epochs 50 --feature_extractor resnet50fpn
+python scripts/train_faster.py --batch_size 4 --learning_rate 2.5e-4 --epochs 10 --feature_extractor resnet50fpn
 ````
 
 To evaluate:
@@ -47,41 +55,93 @@ python scripts/eval_faster.py --state_dict <PATH to model.pth> --feature_extract
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.681    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.924    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.840    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.480    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.676    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.737    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.311    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.752    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.725    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.642    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.735    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.798    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.681    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.924**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.840    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.480    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.676    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.737    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.311    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.752    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.725**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.642    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.735    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.798    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.728    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.953    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.905    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.210    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.710    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.809    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.140    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.740    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.772    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.452    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.754    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.844    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.728    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.953**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.905    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.210    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.710    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.809    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.140    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.740    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.772**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.452    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.754    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.844    |
 
 framerate: 5fps
 
-## Resnet50
+
+## Resnet50FPN from scratch
+
+To train:
+````
+python scripts/train_faster.py --batch_size 4 --learning_rate 2.5e-4 --epochs 60 --feature_extractor resnet50fpn --pretrained False
+````
+
+To evaluate:
+````
+python scripts/eval_faster.py --state_dict <PATH to model.pth> --feature_extractor resnet50fpn
+````
+
+On validation set:
+
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.681    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.924**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.840    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.480    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.676    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.737    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.311    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.752    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.725**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.642    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.735    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.798    |
+
+On test set:
+
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.728    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.953**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.905    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.210    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.710    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.809    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.140    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.740    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.772**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.452    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.754    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.844    |
+
+framerate: 5fps
+
+
+
+
+## Resnet50 pretrained
 To train:
 ````
 python scripts/train_faster.py --batch_size 2 --learning_rate 2.5e-4 --epochs 50 --feature_extractor resnet50
@@ -94,42 +154,89 @@ python scripts/eval_faster.py --state_dict <PATH to model.pth> --feature_extract
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.543    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.795    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.595    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.186    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.455    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.707    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.277    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.610    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.611    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.316    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.524    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.768    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.543    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.795**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.595    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.186    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.455    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.707    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.277    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.610    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.611**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.316    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.524    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.768    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.652    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.894    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.750    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.032    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.603    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.806    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.143    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.665    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.688    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.145    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.644    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.840    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95    |     all   |    100    |     0.652    |
+  | **Average Precision  (AP)**  |   **0.50**       |   **all** |  **100**  |   **0.894**  |
+  | Average Precision  (AP)      |     0.75         |     all   |    100    |     0.750    |
+  | Average Precision  (AP)      |     0.50:0.95    |   small   |    100    |     0.032    |
+  | Average Precision  (AP)      |     0.50:0.95    |  medium   |    100    |     0.603    |
+  | Average Precision  (AP)      |     0.50:0.95    |   large   |    100    |     0.806    |
+  | Average Recall     (AR)      |     0.50:0.95    |     all   |      1    |     0.143    |
+  | Average Recall     (AR)      |     0.50:0.95    |     all   |     10    |     0.665    |
+  | **Average Recall     (AR)**  |   **0.50:0.95**  |   **all** |  **100**  |   **0.688**  |
+  | Average Recall     (AR)      |     0.50:0.95    |   small   |    100    |     0.145    |
+  | Average Recall     (AR)      |     0.50:0.95    |  medium   |    100    |     0.644    |
+  | Average Recall     (AR)      |     0.50:0.95    |   large   |    100    |     0.840    |
+
+framerate: 5.3fps
+
+## Resnet50 from scratch
+To train:
+````
+python scripts/train_faster.py --batch_size 2 --learning_rate 1e-3 --epochs 100 --feature_extractor resnet50 --pretrained False
+````
+     
+To evaluate:
+````
+python scripts/eval_faster.py --state_dict <PATH to model.pth> --feature_extractor resnet50
+````
+
+On validation set:
+
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.543    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.795**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.595    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.186    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.455    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.707    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.277    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.610    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.611**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.316    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.524    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.768    |
+
+On test set:
+
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.652    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.894**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.750    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.032    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.603    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.806    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.143    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.665    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.688**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.145    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.644    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.840    |
 
 framerate: 5.3fps
 
 
-## MobileNetV2
+## MobileNetV2 pretrained
 
 To train:
 ````
@@ -143,39 +250,92 @@ python scripts/eval_faster.py --feature_extractor mobilenetv2 --state_dict <PATH
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.458    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.745    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.468    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.023    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.381    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.624    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.245    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.519    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.519    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.152    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.461    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.668    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.458    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.745**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.468    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.023    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.381    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.624    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.245    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.519    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.519**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.152    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.461    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.668    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.549    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.857    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.595    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.004    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.462    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.767    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.137    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.564    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.586    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.048    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.511    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.804    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.549    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.857**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.595    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.004    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.462    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.767    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.137    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.564    |
+ | **Average Recall     (AR)**   |   **0.50:0.95** |   **all**  |  **100**  |   **0.586**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.048    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.511    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.804    |
 
 frame rate: 10 fps
+
+## MobileNetV2 from scratch
+
+To train:
+````
+python scripts/train_faster.py --batch_size 4 --learning_rate 1e-3 --epochs 100 --feature_extractor mobilenetv2 --pretrained False
+````
+
+To evaluate:
+````
+python scripts/eval_faster.py --feature_extractor mobilenetv2 --state_dict <PATH to model.pth> 
+````
+
+On validation set:
+
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.458    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.745**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.468    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.023    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.381    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.624    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.245    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.519    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.519**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.152    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.461    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.668    |
+
+On test set:
+
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.549    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.857**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.595    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.004    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.462    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.767    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.137    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.564    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.586**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.048    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.511    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.804    |
+
+frame rate: 10 fps
+
+
+
+
+
 
 # SSD512
 
@@ -193,38 +353,38 @@ python scripts/eval_ssd.py --model ssd512 --feature_extractor resnet50 --state_d
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.386    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.587    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.446    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.241    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.539    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.207    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.440    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.440    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.262    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.614    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.386    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.587**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.446    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.000    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.241    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.539    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.207    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.440    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.440**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.000    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.262    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.614    |
 
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.455    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.683    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.546    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.377    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.649    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.128    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.490    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.490    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.419    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.691    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.455    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.683**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.546    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.000    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.377    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.649    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.128    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.490    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.490**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.000    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.419    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.691    |
 
 framerate: 58 fps
 
@@ -243,39 +403,44 @@ python scripts/eval_ssd.py --model ssd512 --feature_extractor mobilenetv2 --stat
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.246    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.422    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.257    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.079    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.329    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.162    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.333    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.333    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.080    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.449    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.246    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.422**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.257    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.000    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.079    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.329    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.162    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.333    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.333**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.000    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.080    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.449    |
 
 framerate: 71fps
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.255    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.441    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.270    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.128    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.529    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.108    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.277    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.277    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.000    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.151    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.569    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.255    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.441**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.270    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.000    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.128    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.529    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.108    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.277    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.277**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.000    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.151    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.569    |
+
+
+
+
+
 
 # YOLO 
 
@@ -295,37 +460,37 @@ python scripts/eval_yolo.py --model yolov3 --batch_size 4 --state_dict <model.pt
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.288    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.533    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.277    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.189    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.511    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.400    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.165    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.387    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.395    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.301    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.595    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.800    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.288    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.533**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.277    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.189    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.511    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.400    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.165    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.387    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.395**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.301    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.595    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.800    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.471    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.772    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.534    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.303    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.596    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.568    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.117    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.521    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.563    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.442    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.663    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.608    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.471    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.772**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.534    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.303    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.596    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.568    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.117    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.521    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.563**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.442    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.663    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.608    |
 
   framerate: 40 fps
 
@@ -343,37 +508,37 @@ python scripts/eval_yolo.py --model yolov3 --batch_size 4 --state_dict <model.pt
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.375    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.646    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.380    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.276    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.588    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.900    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.209    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.453    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.463    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.367    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.668    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.900    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.375    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.646**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.380    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.276    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.588    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.900    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.209    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.453    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.463**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.367    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.668    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.900    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.594    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.857    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.707    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.435    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.704    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.770    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.132    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.626    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.663    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.544    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.755    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.804    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.594    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.857**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.707    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.435    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.704    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.770    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.132    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.626    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.663**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.544    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.755    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.804    |
 
   framerate: 38 fps
 
@@ -391,37 +556,37 @@ python scripts/eval_yolo.py --model yolov3_spp --batch_size 4 --state_dict <mode
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.324    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.590    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.315    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.213    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.546    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.700    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.192    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.422    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.431    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.344    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.617    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.700    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.324    |
+ | **Average Precision  (AP)**   |   **0.50**      |   **all**  |  **100**  |   **0.590**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.315    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.213    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.546    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.700    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.192    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.422    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.431**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.344    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.617    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.700    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.496    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.802    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.562    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.333    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.610    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.625    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.118    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.538    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.592    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.484    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.678    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.680    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.496    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.802**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.562    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.333    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.610    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.625    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.118    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.538    |
+  || **Average Recall     (AR)** |   **0.50:0.95** |   **all**  |  **100**  |   **0.592**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.484    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.678    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.680    |
 
   framerate: 58 fps
 
@@ -439,37 +604,37 @@ python scripts/eval_yolo.py --model yolov3_spp --batch_size 4 --state_dict <mode
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.353    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.600    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.360    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.248    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.580    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.900    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.194    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.433    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.439    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.336    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.659    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.900    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.353    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.600**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.360    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.248    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.580    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.900    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.194    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.433    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.439**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.336    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.659    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.900    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.583    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.849    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.686    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.425    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.692    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.742    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.135    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.614    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.651    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.532    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.743    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.772    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.583    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.849**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.686    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.425    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.692    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.742    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.135    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.614    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.651**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.532    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.743    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.772    |
    
   framerate: 58 fps
 
@@ -487,37 +652,37 @@ python scripts/eval_yolo.py --model yolov4 --batch_size 2 --state_dict <model.pt
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.339    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.593    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.349    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.247    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.543    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.800    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.203    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.432    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.439    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.352    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.628    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.800    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.339    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.593**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.349    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.247    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.543    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.800    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.203    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.432    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.439**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.352    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.628    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.800    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.518    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.803    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.607    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.341    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.650    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.653    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.126    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.562    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.606    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.471    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.715    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.714    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.518    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.803**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.607    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.341    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.650    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.653    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.126    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.562    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.606**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.471    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.715    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.714    |
 
   framerate: 55 fps
 
@@ -535,37 +700,37 @@ python scripts/eval_yolo.py --model yolov4 --batch_size 2 --state_dict <model.pt
 
 On validation set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.392    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.627    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.428    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.289    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.626    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.900    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.213    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.471    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.477    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.367    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.711    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.900    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.392    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.627**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.428    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.289    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.626    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.900    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.213    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.471    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.477**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.367    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.711    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.900    |
 
 On test set:
 
-  |       Metric             |  IoU Thresholds |  Scales  |  maxDets  | AP/AR values |
-  | :----------------------: | :-------------: | :------: | :-------: | :----------: |
-  | Average Precision  (AP)  |     0.50:0.95   |     all  |    100    |     0.606    |
-  | Average Precision  (AP)  |     0.50        |     all  |    100    |     0.846    |
-  | Average Precision  (AP)  |     0.75        |     all  |    100    |     0.704    |
-  | Average Precision  (AP)  |     0.50:0.95   |   small  |    100    |     0.427    |
-  | Average Precision  (AP)  |     0.50:0.95   |  medium  |    100    |     0.729    |
-  | Average Precision  (AP)  |     0.50:0.95   |   large  |    100    |     0.787    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |      1    |     0.137    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |     10    |     0.638    |
-  | Average Recall     (AR)  |     0.50:0.95   |     all  |    100    |     0.680    |
-  | Average Recall     (AR)  |     0.50:0.95   |   small  |    100    |     0.552    |
-  | Average Recall     (AR)  |     0.50:0.95   |  medium  |    100    |     0.780    |
-  | Average Recall     (AR)  |     0.50:0.95   |   large  |    100    |     0.816    |
+  |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
+  | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.606    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.846**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.704    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.427    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.729    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.787    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.137    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.638    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.680**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.552    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.780    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.816    |
 
   framerate: 55 fps
 
