@@ -45,8 +45,7 @@ class DataMatrixDataset(Dataset):  # for training/testing
                             image.append({"geometry":bbox})
                         image_rep = {"DataMatrix":image}
                         df.loc[df.index == i, "Label"] = image_rep
-                    
-                self.labels_file = df 
+                    self.labels_file = df 
         else:
             raise Exception("Oops. There are only two modes: train and val!")
         n = len(self.imgs)
