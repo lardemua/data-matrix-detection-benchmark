@@ -6,10 +6,10 @@ import math
 
 
 # pretrained torchvision 
-def resnet50_pt():
+def resnet50_pt(pretrained):
     """Resnet50 feature extractor to the Faster RCNN acrhitecture
     """
-    resnet = torchvision.models.resnet50(pretrained=True)
+    resnet = torchvision.models.resnet50(pretrained=pretrained)
     modules = list(resnet.children())[:-2] # delete the last fc layer and avg pool layers.
     features = nn.Sequential(*modules)
     return features

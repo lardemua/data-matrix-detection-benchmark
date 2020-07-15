@@ -42,7 +42,7 @@ def get_arguments():
                 "Possible choices: faster, ssd512, yolov3, yolov3_spp and yolov4")
     )
     
-    #backbone choice
+    #backbone choices
     parser.add_argument(
         "--feature_extractor",
         "-feat",
@@ -52,6 +52,14 @@ def get_arguments():
                 "Default: mobilenetv2; "
                 "Possible choices: mobilenetv2,resnet50, resnet50fpn for faster and mobilenetv2 and resnet50 for ssd")
     )
+    parser.add_argument(
+        "--pretrained",
+        "-pre",
+        default=True,
+        type=str2bool,
+        required=False
+        help = ("Torchvision provides COCO weights for Resnet50 FPN and ImageNet weights for Resnet50 and MobileNetV2.")
+        )
 
     # Hyperparameters
     parser.add_argument(
@@ -110,18 +118,11 @@ def get_arguments():
     )
 
     parser.add_argument(
-        '--pretrained_model',
-        '-pm',
-        type=str,
+        '--imgs_rect',
+        '-rect',
+        default=True,
+        type=str2bool,
         required=False
-    )
-    
-    parser.add_argument(
-    '--imgs_rect',
-    '-rect',
-    default=True,
-    type=str2bool,
-    required=False
     )
 
     

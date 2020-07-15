@@ -5,10 +5,10 @@ from collections import OrderedDict
 import math
 
 # pretrained from torchvision
-def mobilenetv2_pt():
+def mobilenetv2_pt(pretrained):
     """MobileNetV2 feature extractor to the Faster RCNN architecture
     """
-    return torchvision.models.mobilenet_v2(pretrained=True).features
+    return torchvision.models.mobilenet_v2(pretrained=pretrained).features
 
 # from scratch
 # Modified from https://github.com/tonylins/pytorch-mobilenet-v2/blob/master/MobileNetV2.py.

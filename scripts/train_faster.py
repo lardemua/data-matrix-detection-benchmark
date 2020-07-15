@@ -84,7 +84,7 @@ if (args.model == "faster"):
     if (args.feature_extractor == "mobilenetv2"):
         model = mobilenetv2_fasterRCNN(n_classes)
     elif (args.feature_extractor == "resnet50fpn"):
-        model = resnet50fpn_fasterRCNN(n_classes)
+        model = resnet50fpn_fasterRCNN(n_classes, args.pretrained)
     elif (args.feature_extractor == "resnet50"):
         model = resnet50_fasterRCNN(n_classes)
 else:

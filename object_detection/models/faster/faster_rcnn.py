@@ -6,26 +6,26 @@ from object_detection.models.backbones.mobilenetv2 import mobilenetv2_pt
 from object_detection.models.backbones.resnet50 import resnet50_pt
 
 
-def resnet50fpn_fasterRCNN(num_classes):
+def resnet50fpn_fasterRCNN(num_classes, pretrained = True):
     """Faster-RCNN architecture construction, whose backbone
     is a Resnet50 with FPN module. 
     Keyword arguments:
     - num_classes: number of classes     
     """
-    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=pretrained)
     num_classes = num_classes
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
     return model
 
 
-def resnet50_fasterRCNN(num_classes):
+def resnet50_fasterRCNN(num_classes, pretrained = True):
     """Faster-RCNN architecture construction, whose backbone
     is a Resnet50. 
     Keyword arguments:
     - num_classes: number of classes     
     """
-    backbone = resnet50_pt()
+    backbone = resnet50_pt(pretrained)
     backbone.out_channels = 2048
     anchor_generator = AnchorGenerator(
         sizes = ((32,64,128,256,512),),
@@ -41,13 +41,13 @@ def resnet50_fasterRCNN(num_classes):
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
     return model
 
-def mobilenetv2_fasterRCNN(num_classes):
+def mobilenetv2_fasterRCNN(num_classes, pretrained = True):
     """Faster-RCNN architecture construction, whose backbone
     is a MobileNetV2. 
     Keyword arguments:
     - num_classes: number of classes     
     """
-    backbone = mobilenetv2_pt()
+    backbone = mobilenetv2_pt(pretrained)
     backbone.out_channels = 1280
     anchor_generator = AnchorGenerator(
         sizes = ((32,64,128,256,512),),
