@@ -61,9 +61,9 @@ device = torch.device("cuda")
 train_tfms, val_tfms = get_tfms_faster(ds = args.dataset)
 
 if args.dataset == 'datamatrix':
-  val_ds = DataMatrixDataset(transforms = val_tfms, mode = 'test')
+  test_ds = DataMatrixDataset(transforms = val_tfms, mode = 'test')
   val_loader = DataLoader(
-     val_ds,
+     test_ds,
      batch_size = args.batch_size,
      shuffle=False,
      drop_last=False,

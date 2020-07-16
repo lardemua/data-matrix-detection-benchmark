@@ -104,13 +104,13 @@ else:
 device = torch.device("cuda")
   
 if args.dataset == 'datamatrix':    
-    val_ds = DataMatrixDataset(mode = "test",
+    test_ds = DataMatrixDataset(mode = "test",
                                 img_size = 896,
                                 batch_size = args.batch_size,
                                 hyp = hyp,
                                 rect = True)
     
-    val_loader = DataLoader(val_ds,
+    val_loader = DataLoader(test_ds,
                         batch_size = args.batch_size,
                         num_workers = args.workers,
                         pin_memory = True,
