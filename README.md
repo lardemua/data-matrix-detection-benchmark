@@ -87,7 +87,6 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.754    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.844    |
 
-framerate: 5fps
 
 
 ## Resnet50FPN from scratch
@@ -136,7 +135,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.750    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.837    |
 
-framerate: 5fps
+framerate: 5.4fps
 
 
 
@@ -186,7 +185,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95    |  medium   |    100    |     0.644    |
   | Average Recall     (AR)      |     0.50:0.95    |   large   |    100    |     0.840    |
 
-framerate: 5.3fps
+
 
 ## Resnet50 from scratch
 To train:
@@ -233,7 +232,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.626    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.827    |
 
-framerate: 5.3fps
+framerate: 3.9
 
 
 ## MobileNetV2 pretrained
@@ -282,7 +281,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.511    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.804    |
 
-frame rate: 10 fps
+
 
 ## MobileNetV2 from scratch
 
@@ -330,10 +329,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.502    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.784    |
 
-frame rate: 10 fps
-
-
-
+frame rate: 7.7 fps
 
 
 
@@ -386,7 +382,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.419    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.691    |
 
-framerate: 58 fps
+framerate: 48.3 fps
 
 
 ## MobileNetV2
@@ -418,7 +414,6 @@ On validation set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.080    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.449    |
 
-framerate: 71fps
 
 On test set:
 
@@ -437,7 +432,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.151    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.569    |
 
-
+framerate: 67fps
 
 
 
@@ -492,7 +487,6 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.715    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.768    |
 
-  framerate: 40 fps
 
 ## v3 mosaic aug
 
@@ -540,7 +534,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.755    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.804    |
 
-  framerate: 38 fps
+  framerate: 39.8 fps
 
 ## v3 SPP
 
@@ -589,7 +583,6 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.748    |
 
 
-  framerate: 58 fps
 
 ## v3 SPP mosaic aug
 
@@ -624,20 +617,20 @@ On test set:
 
   |       Metric                 |  IoU Thresholds |    Scales  |  maxDets  | AP/AR values |
   | :--------------------------: | :-------------: | :--------: | :-------: | :----------: |
-  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.583    |
-  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.849**  |
-  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.686    |
-  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.425    |
-  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.692    |
-  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.742    |
-  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.135    |
-  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.614    |
-  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.651**  |
-  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.532    |
-  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.743    |
-  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.772    |
+  | Average Precision  (AP)      |     0.50:0.95   |     all    |    100    |     0.594    |
+  | **Average Precision  (AP)**  |   **0.50**      |   **all**  |  **100**  |   **0.863**  |
+  | Average Precision  (AP)      |     0.75        |     all    |    100    |     0.698    |
+  | Average Precision  (AP)      |     0.50:0.95   |   small    |    100    |     0.437    |
+  | Average Precision  (AP)      |     0.50:0.95   |  medium    |    100    |     0.706    |
+  | Average Precision  (AP)      |     0.50:0.95   |   large    |    100    |     0.769    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |      1    |     0.131    |
+  | Average Recall     (AR)      |     0.50:0.95   |     all    |     10    |     0.626    |
+  | **Average Recall     (AR)**  |   **0.50:0.95** |   **all**  |  **100**  |   **0.668**  |
+  | Average Recall     (AR)      |     0.50:0.95   |   small    |    100    |     0.550    |
+  | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.760    |
+  | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.808    |
    
-  framerate: 58 fps
+  framerate: 37.1 fps
 
 ## v4
 
@@ -733,7 +726,7 @@ On test set:
   | Average Recall     (AR)      |     0.50:0.95   |  medium    |    100    |     0.780    |
   | Average Recall     (AR)      |     0.50:0.95   |   large    |    100    |     0.816    |
 
-  framerate: 55 fps
+  framerate: 47.6 fps
 
 # Acknowledgements
 
