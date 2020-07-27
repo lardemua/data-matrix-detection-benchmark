@@ -148,7 +148,7 @@ class SSD(nn.Module):
 
 # ResNet50
 
-def Resnet50SSD(num_classes, device, width_mult=1.0, use_batch_norm=True, onnx_compatible=False, is_test=False):
+def Resnet50SSD(num_classes, device, is_test=False):
     from object_detection.utils.ssd import ssd512_config_resnet as config 
     inp_size = config.image_size
     resnet50 = Resnet50(Bottleneck, [3, 4, 6, 3], inp_size)
