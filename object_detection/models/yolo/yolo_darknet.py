@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from object_detection.utils.yolo.parse_config import parse_model_cfg
+import math
 
 
 ONNX_EXPORT = False
@@ -33,7 +34,7 @@ def create_modules(module_defs, img_size, cfg):
                                                        stride=stride,
                                                        padding=k // 2 if mdef['pad'] else 0,
                                                        groups=mdef['groups'] if 'groups' in mdef else 1,
-                                                       bias=False)) #have a problem here should b: not bn
+                                                       bias=not bn)) 
             else:  # multiple-size conv
                 modules.add_module('MixConv2d', MixConv2d(in_ch=output_filters[-1],
                                                           out_ch=filters,
